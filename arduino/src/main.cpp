@@ -41,7 +41,7 @@ SoftTimer timerSendMsg_;            // chronometre d'envoie de messages
 SoftTimer timerPulse_;              // chronometre pour la duree d'un pulse
 
 uint16_t pulseTime_ = 0;            // temps dun pulse en ms
-float PWM_des_ = 0;                 // PWM desire pour les moteurs
+float PWM_des_ = 0.5;                 // PWM desire pour les moteurs
 
 
 float Axyz[3];                      // tableau pour accelerometre
@@ -88,10 +88,40 @@ void setup() {
 /* Boucle principale (infinie)*/
 void loop() {
 
-magnetON();
-  delay(1000); 
-  magnetOFF();
-  delay(1000);
+ // PWM_des_ = map(analogRead(POTPIN), 0, 1, 0, 1023); 
+   // forward();
+
+    if (Serial.available() > 0) 
+    {
+    char input = Serial.read();
+    if (input == 'w') 
+    {
+      forward();
+    } 
+    else if (input == 's') 
+    {
+      reverse();
+    } 
+    else 
+    {
+      stop ();
+    }
+  }
+
+
+  /* if(analogRead(POTPIN)>= 500)
+  {
+    forward();
+
+  } 
+  else if (analogRead(POTPIN) > 400)
+  {
+    stop();
+  } 
+  else if(analogRead(POTPIN)<= 400)
+  {
+    reverse();
+  }
 
   if(shouldRead_){
     readMsg();
@@ -99,7 +129,7 @@ magnetON();
   if(shouldSend_){
     sendMsg();
   }
-  
+  */
 
   // mise a jour des chronometres
   timerSendMsg_.update();
@@ -158,10 +188,11 @@ void sendMsg(){
   doc["actualTime"] = pid_.getActualDt();
 
   // Serialisation
-  serializeJson(doc, Serial);
+  // serializeJson(doc, Serial);
   // Envoit
-  Serial.println();
+  // Serial.println();
   shouldSend_ = false;
+  // Serial.println(imu_.getGyroZ());
 }
 
 void readMsg(){

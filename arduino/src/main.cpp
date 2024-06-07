@@ -58,6 +58,8 @@ void sendMsg();
 void readMsg();
 void serialEvent();
 void runsequence();
+void magnetON(); 
+void magnetOFF();
 
 /*---------------------------- fonctions "Main" -----------------------------*/
 
@@ -79,10 +81,17 @@ void setup() {
   // Attache des fonctions de retour
   pid_.setEpsilon(0.001);
   pid_.setPeriod(200);
+
+  pinMode(MAGPIN, OUTPUT);
 }
   
 /* Boucle principale (infinie)*/
 void loop() {
+
+magnetON();
+  delay(1000); 
+  magnetOFF();
+  delay(1000);
 
   if(shouldRead_){
     readMsg();
@@ -207,3 +216,7 @@ void runSequence(){
   }
 
 }
+
+void magnetON() { digitalWrite(MAGPIN, HIGH); }
+
+void magnetOFF() { digitalWrite(MAGPIN, LOW); }

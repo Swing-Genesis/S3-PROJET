@@ -1,14 +1,13 @@
 /* 
  * GRO 302 - Conception d'un robot mobile
- * Code de démarrage Template
- * Auteurs: Etienne Gendron     
- * date: Juin 2022
+ * Code de démarrage
+ * Auteurs: Jean-Samuel Lauzon     
+ * date: 1 mai 2019
 */
 
 /*------------------------------ Librairies ---------------------------------*/
-#include <ArduinoJson.h> // librairie de syntaxe JSON
-#include <SPI.h> // librairie Communication SPI
 #include <LibS3GRO.h>
+#include <ArduinoJson.h>
 
 /*------------------------------ Constantes ---------------------------------*/
 
@@ -31,17 +30,14 @@ PID pid_;                           // objet PID
 
 volatile bool shouldSend_ = false;  // drapeau prêt à envoyer un message
 volatile bool shouldRead_ = false;  // drapeau prêt à lire un message
-
-int Direction_ = 0;                 // drapeau pour indiquer la direction du robot
-volatile bool RunForward_ = false;  // drapeau pret à rouler en avant
-volatile bool stop_ = false;        // drapeau pour arrêt du robot
-volatile bool RunReverse_ = false;  // drapeau pret à rouler en arrière
+volatile bool shouldPulse_ = false; // drapeau pour effectuer un pulse
+volatile bool isInPulse_ = false;   // drapeau pour effectuer un pulse
 
 SoftTimer timerSendMsg_;            // chronometre d'envoie de messages
 SoftTimer timerPulse_;              // chronometre pour la duree d'un pulse
 
-uint16_t pulseTime_ = 0;            // temps dun pulse en ms
-float PWM_des_ = 0;                 // PWM desire pour les moteurs
+uint16_t pulseTime_ = 50;            // temps dun pulse en ms
+float pulsePWM_ = 0.5;                // Amplitude de la tension au moteur [-1,1]
 
 
 float Axyz[3];                      // tableau pour accelerometre
@@ -51,15 +47,16 @@ float Mxyz[3];                      // tableau pour magnetometre
 /*------------------------- Prototypes de fonctions -------------------------*/
 
 void timerCallback();
-void forward();
-void stop();
-void reverse();
+void startPulse();
+void endPulse();
 void sendMsg(); 
 void readMsg();
 void serialEvent();
-void runsequence();
-void magnetON(); 
-void magnetOFF();
+
+// Fonctions pour le PID
+double PIDmeasurement();
+void PIDcommand(double cmd);
+void PIDgoalReached();
 
 /*---------------------------- fonctions "Main" -----------------------------*/
 
@@ -75,23 +72,22 @@ void setup() {
   timerSendMsg_.setDelay(UPDATE_PERIODE);
   timerSendMsg_.setCallback(timerCallback);
   timerSendMsg_.enable();
+
+  // Chronometre duration pulse
+  timerPulse_.setCallback(endPulse);
   
   // Initialisation du PID
   pid_.setGains(0.25,0.1 ,0);
   // Attache des fonctions de retour
+  pid_.setMeasurementFunc(PIDmeasurement);
+  pid_.setCommandFunc(PIDcommand);
+  pid_.setAtGoalFunc(PIDgoalReached);
   pid_.setEpsilon(0.001);
   pid_.setPeriod(200);
-
-  pinMode(MAGPIN, OUTPUT);
 }
-  
+
 /* Boucle principale (infinie)*/
 void loop() {
-
-magnetON();
-  delay(1000); 
-  magnetOFF();
-  delay(1000);
 
   if(shouldRead_){
     readMsg();
@@ -99,7 +95,9 @@ magnetON();
   if(shouldSend_){
     sendMsg();
   }
-  
+  if(shouldPulse_){
+    startPulse();
+  }
 
   // mise a jour des chronometres
   timerSendMsg_.update();
@@ -115,26 +113,25 @@ void serialEvent(){shouldRead_ = true;}
 
 void timerCallback(){shouldSend_ = true;}
 
-void forward(){
-  /* Faire rouler le robot vers l'avant à une vitesse désirée */
-  AX_.setMotorPWM(0, PWM_des_);
-  AX_.setMotorPWM(1, PWM_des_);
-  Direction_ = 1;
+void startPulse(){
+  /* Demarrage d'un pulse */
+  timerPulse_.setDelay(pulseTime_);
+  timerPulse_.enable();
+  timerPulse_.setRepetition(1);
+  AX_.setMotorPWM(0, pulsePWM_);
+  AX_.setMotorPWM(1, pulsePWM_);
+  shouldPulse_ = false;
+  isInPulse_ = true;
 }
 
-void stop(){
-  /* Stopper le robot */
+void endPulse(){
+  /* Rappel du chronometre */
   AX_.setMotorPWM(0,0);
   AX_.setMotorPWM(1,0);
-  Direction_ = 0;
+  timerPulse_.disable();
+  isInPulse_ = false;
 }
 
-void reverse(){
-  /* Faire rouler le robot vers l'arrière à une vitesse désirée */
-  AX_.setMotorPWM(0, -PWM_des_);
-  AX_.setMotorPWM(1, -PWM_des_);
-  Direction_ = -1;
-}
 void sendMsg(){
   /* Envoit du message Json sur le port seriel */
   StaticJsonDocument<500> doc;
@@ -144,10 +141,12 @@ void sendMsg(){
   doc["potVex"] = analogRead(POTPIN);
   doc["encVex"] = vexEncoder_.getCount();
   doc["goal"] = pid_.getGoal();
+  doc["measurements"] = PIDmeasurement();
   doc["voltage"] = AX_.getVoltage();
   doc["current"] = AX_.getCurrent(); 
-  doc["PWM_des"] = PWM_des_;
-  doc["Etat_robot"] = Direction_;
+  doc["pulsePWM"] = pulsePWM_;
+  doc["pulseTime"] = pulseTime_;
+  doc["inPulse"] = isInPulse_;
   doc["accelX"] = imu_.getAccelX();
   doc["accelY"] = imu_.getAccelY();
   doc["accelZ"] = imu_.getAccelZ();
@@ -181,16 +180,20 @@ void readMsg(){
   }
   
   // Analyse des éléments du message message
-  parse_msg = doc["PWM_des"];
+  parse_msg = doc["pulsePWM"];
   if(!parse_msg.isNull()){
-     PWM_des_ = doc["pulsePWM"].as<float>();
+     pulsePWM_ = doc["pulsePWM"].as<float>();
   }
 
-   parse_msg = doc["RunForward"];
+  parse_msg = doc["pulseTime"];
   if(!parse_msg.isNull()){
-     RunForward_ = doc["RunForward"];
+     pulseTime_ = doc["pulseTime"].as<float>();
   }
 
+  parse_msg = doc["pulse"];
+  if(!parse_msg.isNull()){
+     shouldPulse_ = doc["pulse"];
+  }
   parse_msg = doc["setGoal"];
   if(!parse_msg.isNull()){
     pid_.disable();
@@ -201,22 +204,14 @@ void readMsg(){
   }
 }
 
-void runSequence(){
-/*Exemple de fonction pour faire bouger le robot en avant et en arrière.*/
 
-  if(RunForward_){
-    forward();
-  }
-
-  if(stop_){
-    forward();
-  }
-  if(RunReverse_){
-    reverse();
-  }
-
+// Fonctions pour le PID
+double PIDmeasurement(){
+  // To do
 }
-
-void magnetON() { digitalWrite(MAGPIN, HIGH); }
-
-void magnetOFF() { digitalWrite(MAGPIN, LOW); }
+void PIDcommand(double cmd){
+  // To do
+}
+void PIDgoalReached(){
+  // To do
+}

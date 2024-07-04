@@ -37,7 +37,7 @@ SoftTimer timerSendMsg_;            // chronometre d'envoie de messages
 SoftTimer timerPulse_;              // chronometre pour la duree d'un pulse
 
 uint16_t pulseTime_ = 50;            // temps dun pulse en ms
-float pulsePWM_ = 0.5;                // Amplitude de la tension au moteur [-1,1]
+float pulsePWM_ = 1;                // Amplitude de la tension au moteur [-1,1]
 
 
 float Axyz[3];                      // tableau pour accelerometre
@@ -67,6 +67,8 @@ void setup() {
   vexEncoder_.init(2,3);            // initialisation de l'encodeur VEX
   // attache de l'interruption pour encodeur vex
   attachInterrupt(vexEncoder_.getPinInt(), []{vexEncoder_.isr();}, FALLING);
+
+  pinMode(MAGPIN, OUTPUT);
   
   // Chronometre envoie message
   timerSendMsg_.setDelay(UPDATE_PERIODE);
@@ -84,27 +86,36 @@ void setup() {
   pid_.setAtGoalFunc(PIDgoalReached);
   pid_.setEpsilon(0.001);
   pid_.setPeriod(200);
+
+  AX_.setMotorPWM(0, 0);
+  AX_.setMotorPWM(1, 0);
 }
 
 /* Boucle principale (infinie)*/
 void loop() {
 
+  
   if(shouldRead_){
     readMsg();
   }
+  /*
   if(shouldSend_){
-    sendMsg();
+    //sendMsg();
   }
   if(shouldPulse_){
     startPulse();
   }
+  */
+
+  AX_.setMotorPWM(0, pulsePWM_);
+  AX_.setMotorPWM(1, pulsePWM_);
 
   // mise a jour des chronometres
-  timerSendMsg_.update();
-  timerPulse_.update();
+  //timerSendMsg_.update();
+  //timerPulse_.update();
   
   // mise à jour du PID
-  pid_.run();
+  //pid_.run();
 }
 
 /*---------------------------Definition de fonctions ------------------------*/
@@ -165,6 +176,7 @@ void sendMsg(){
 
 void readMsg(){
   // Lecture du message Json
+
   StaticJsonDocument<500> doc;
   JsonVariant parse_msg;
 
@@ -182,7 +194,8 @@ void readMsg(){
   // Analyse des éléments du message message
   parse_msg = doc["pulsePWM"];
   if(!parse_msg.isNull()){
-     pulsePWM_ = doc["pulsePWM"].as<float>();
+    pulsePWM_ = doc["pulsePWM"].as<float>();
+    Serial.println(pulsePWM_);
   }
 
   parse_msg = doc["pulseTime"];
@@ -194,6 +207,7 @@ void readMsg(){
   if(!parse_msg.isNull()){
      shouldPulse_ = doc["pulse"];
   }
+
   parse_msg = doc["setGoal"];
   if(!parse_msg.isNull()){
     pid_.disable();

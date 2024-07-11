@@ -43,6 +43,7 @@ float pulsePWM_ = 0.5;                // Amplitude de la tension au moteur [-1,1
 float Axyz[3];                      // tableau pour accelerometre
 float Gxyz[3];                      // tableau pour giroscope
 float Mxyz[3];                      // tableau pour magnetometre
+int cas = 0;
 
 /*------------------------- Prototypes de fonctions -------------------------*/
 
@@ -52,6 +53,8 @@ void endPulse();
 void sendMsg(); 
 void readMsg();
 void serialEvent();
+void GoForward(double position, float vitesse);
+double GetLocation();
 
 // Fonctions pour le PID
 double PIDmeasurement();
@@ -88,11 +91,14 @@ void setup() {
 
 /* Boucle principale (infinie)*/
 void loop() {
-
-  if(shouldRead_){
-    readMsg();
-  }
-  if(shouldSend_){
+//AX_.setMotorPWM(0,0.5);
+ GoForward(1,0.5);
+ Serial.println(AX_.readEncoder(0));
+ 
+  //if(shouldRead_){
+  //  readMsg();
+  //}
+  /*if(shouldSend_){
     sendMsg();
   }
   if(shouldPulse_){
@@ -105,6 +111,7 @@ void loop() {
   
   // mise à jour du PID
   pid_.run();
+  */
 }
 
 /*---------------------------Definition de fonctions ------------------------*/
@@ -112,6 +119,10 @@ void loop() {
 void serialEvent(){shouldRead_ = true;}
 
 void timerCallback(){shouldSend_ = true;}
+
+void GoForward(double position, float vitesse);
+
+double GetLocation();
 
 void startPulse(){
   /* Demarrage d'un pulse */
@@ -214,4 +225,28 @@ void PIDcommand(double cmd){
 }
 void PIDgoalReached(){
   // To do
+}
+
+void GoForward(double position, float vitesse)
+{
+  switch(cas){
+    case 0:
+    AX_.resetEncoder(0);
+    cas = 1;
+    case 1:
+      AX_.setMotorPWM(0,vitesse);
+      if ( position >= GetLocation())
+      {
+         AX_.setMotorPWM(0,0);
+         cas = 2;
+         break;
+      }
+    case 2:
+    break;
+  }
+}
+
+double GetLocation()
+{
+  return (AX_.readEncoder(0)/3200)*0.1*PI;
 }

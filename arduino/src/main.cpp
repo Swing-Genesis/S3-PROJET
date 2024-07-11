@@ -39,6 +39,8 @@ SoftTimer timerPulse_;              // chronometre pour la duree d'un pulse
 uint16_t pulseTime_ = 50;            // temps dun pulse en ms
 float pulsePWM_ = 1;                // Amplitude de la tension au moteur [-1,1]
 
+bool isMagnetON = false;
+
 
 float Axyz[3];                      // tableau pour accelerometre
 float Gxyz[3];                      // tableau pour giroscope
@@ -69,6 +71,7 @@ void setup() {
   attachInterrupt(vexEncoder_.getPinInt(), []{vexEncoder_.isr();}, FALLING);
 
   pinMode(MAGPIN, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   
   // Chronometre envoie message
   timerSendMsg_.setDelay(UPDATE_PERIODE);
@@ -97,6 +100,17 @@ void loop() {
   
   if(shouldRead_){
     readMsg();
+  }
+
+  if(isMagnetON)
+  {
+    Serial.println("Magnet ON");
+    digitalWrite(MAGPIN, HIGH);
+  }
+  else
+  {
+    Serial.println("Magnet OFF");
+    digitalWrite(MAGPIN, LOW);
   }
   /*
   if(shouldSend_){
@@ -195,12 +209,16 @@ void readMsg(){
   parse_msg = doc["pulsePWM"];
   if(!parse_msg.isNull()){
     pulsePWM_ = doc["pulsePWM"].as<float>();
-    Serial.println(pulsePWM_);
   }
 
   parse_msg = doc["pulseTime"];
   if(!parse_msg.isNull()){
      pulseTime_ = doc["pulseTime"].as<float>();
+  }
+
+  parse_msg = doc["magnet"];
+  if(!parse_msg.isNull()){
+    isMagnetON = doc["magnet"].as<bool>();
   }
 
   parse_msg = doc["pulse"];

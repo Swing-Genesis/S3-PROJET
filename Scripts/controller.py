@@ -93,6 +93,12 @@ class XBOXController:
             command_data["magnet"] = 1
         else:
             command_data["magnet"] = 0
+
+        # Process button data
+        if self.button_data.get(Y_BUTTON, False):
+            command_data["start"] = 1
+        else:
+            command_data["start"] = 0
         
         return command_data
 

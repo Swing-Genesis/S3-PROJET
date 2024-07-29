@@ -54,7 +54,8 @@ void MainWindow::receiveFromSerial(QString msg){
         QJsonDocument jsonResponse = QJsonDocument::fromJson(msgBuffer_.toUtf8());
 
         // Analyse du message Json
-        if(~jsonResponse.isEmpty()){
+        if(~jsonResponse.isEmpty())
+        {
             QJsonObject jsonObj = jsonResponse.object();
             QString buff = jsonResponse.toJson(QJsonDocument::Indented);
 
@@ -71,6 +72,43 @@ void MainWindow::receiveFromSerial(QString msg){
                 chart_.createDefaultAxes();
             }
 
+            if (jsonObj.contains("current") && jsonObj.contains("voltage") && jsonObj.contains("time")) //Displaying Power and Energy
+            {
+                double current = jsonObj["current"].toDouble();
+                double voltage = jsonObj["voltage"].toDouble();
+                double time = jsonObj["time"].toDouble();
+
+                double power = current * voltage;
+                double previousTime = 0.0;
+                double energy = 0.0;
+
+                if (previousTime != 0.0)
+                {
+                    double DeltaTime = time - previousTime;
+
+                    energy = power * DeltaTime;
+                }
+
+                ui->Power_Display->display(power);
+                ui->Energy_Display->display(energy); //not sure this works
+
+              //  ui->Power_Display->setStyleSheet("QLCDNumber { background-color: black; color: blue; }");
+              //  ui->Energy_Display->setStyleSheet("QLCDNumber { background-color: black; color: blue; }");
+
+
+            }
+
+            if (jsonObj.contains("encVex")) //Displaying Distance travelled
+            {
+                double encoderValue = jsonObj["encVex"].toDouble();
+                displayDistance(encoderValue);
+            }
+
+            if (jsonObj.contains("potVex"))
+            {
+                double potVexValue = jsonObj["potVex"].toDouble();
+                displayPendulum(potVexValue);
+             }
             // Fonction de reception de message (vide pour l'instant)
             msgReceived_ = msgBuffer_;
             onMessageReceived(msgReceived_);
@@ -101,6 +139,12 @@ void MainWindow::connectButtons(){
     connect(ui->pulseButton, SIGNAL(clicked()), this, SLOT(sendPulseStart()));
     connect(ui->checkBox, SIGNAL(stateChanged(int)), this, SLOT(manageRecording(int)));
     connect(ui->pushButton_Params, SIGNAL(clicked()), this, SLOT(sendPID()));
+    connect(ui->pb_mode_man, SIGNAL(clicked()), this, SLOT(manuelMode()));
+    connect(ui->pb_start_auto, SIGNAL(clicked()), this, SLOT(startAuto()));
+    connect(ui->pb_stop_auto, SIGNAL(clicked()), this, SLOT(stopAuto()));
+    connect(ui->pb_ElectroAimantON, SIGNAL(clicked()), this, SLOT(electroAimantStart()));
+    connect(ui->pb_ElectroAimantOFF, SIGNAL(clicked()), this, SLOT(electroAimantStop()));
+
 }
 
 void MainWindow::connectSpinBoxes(){
@@ -130,7 +174,7 @@ void MainWindow::portCensus(){
 
 void MainWindow::startSerialCom(QString portName){
     // Fonction SLOT pour demarrer la communication serielle
-    qDebug().noquote() << "Connection au port"<< portName;
+    qDebug().noquote() << "Connection au port" << portName;
     if(serialCom_!=nullptr){
         delete serialCom_;
     }
@@ -143,6 +187,7 @@ void MainWindow::changeJsonKeyValue(){
     series_.clear();
     JsonKey_ = ui->JsonKey->text();
 }
+
 void MainWindow::sendPID(){
     // Fonction SLOT pour envoyer les paramettres de pulse
     double goal = ui->lineEdit_DesVal->text().toDouble();
@@ -228,6 +273,7 @@ void MainWindow::stopRecording(){
     record = false;
     delete writer_;
 }
+
 void MainWindow::onMessageReceived(QString msg){
     // Fonction appelee lors de reception de message
     // Decommenter la ligne suivante pour deverminage
@@ -237,4 +283,103 @@ void MainWindow::onMessageReceived(QString msg){
 void MainWindow::onPeriodicUpdate(){
     // Fonction SLOT appelee a intervalle definie dans le constructeur
     qDebug().noquote() << "*";
+}
+
+
+void MainWindow::electroAimantStart()
+{
+    magnetOn = true;
+    QJsonObject jsonObject {
+        {"magnet", magnetOn}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+}
+
+void MainWindow::electroAimantStop()
+{
+    magnetOn = false;
+    QJsonObject jsonObject {
+        {"magnet", magnetOn}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+}
+
+
+void MainWindow::startAuto()
+{
+    bool startAuto = true;
+    QJsonObject jsonObject {
+        {"startAuto", startAuto} //Vérifier variables du code avec nath
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+}
+
+void MainWindow::stopAuto()
+{
+    bool startAuto = false;
+    QJsonObject jsonObject {
+        {"startAuto", startAuto} //Vérifier variable avec nath
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+}
+
+void MainWindow::manuelMode()
+{
+    bool startMan = true;
+    QJsonObject jsonObject {
+        {"startMan", startMan} //Vérifier variable avec nath
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+}
+
+
+
+void MainWindow::restMode()
+{
+
+    bool restMode = true;
+    QJsonObject jsonObject {
+        {"restMode", restMode} //Vérifier variable avec nath
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+}
+
+
+
+
+void MainWindow::displayDistance(double encoderValue) //Vérifier si cette technique marche pis fait pas juste afficher des gros jump de valeurs
+{
+
+    const double encoderCountsPerRevolution = 3200;
+    const double wheelCircumference = 0.628; // s'assurer que c'est good
+
+
+    double revolutions = encoderValue / encoderCountsPerRevolution;
+
+
+    double distance = revolutions * wheelCircumference;
+
+
+    ui->distance_display->display(distance);
+}
+
+void MainWindow::displayPendulum(double potVex)
+{
+    ui->display_pendulum->display(potVex);
 }

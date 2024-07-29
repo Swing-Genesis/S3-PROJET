@@ -7,7 +7,6 @@ CsvWriter::CsvWriter(QString folder_name){
     file.open(QIODevice::WriteOnly);
 }
 
-
 CsvWriter::~CsvWriter(){
     file.close();
 }

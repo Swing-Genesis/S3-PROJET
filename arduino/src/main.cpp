@@ -62,6 +62,8 @@ void loop()
     }
 
     timerSendMsg_.update();
+
+    robot.setSpeed(25.0); 
 }
 
 void timerCallback() {shouldSend_ = true;}

@@ -23,11 +23,26 @@ private:
     State currentState;
     double position;
     bool isMagnetON = false;
+    float travalledDistance = 0.0; 
 
     /*----- Synchonisation du JSON -----*/
 
-    
-    
+    /*----- Constantes-----*/
+    static constexpr double RADIUS = 0.05; 
+    static constexpr double CIRCONFERENCE = 2*PI*RADIUS; 
+    static constexpr float PULSE_NUMBER = 3200.0f;  
+
+
+
+    float pulseToMeter(unsigned long EncoderValue)
+
+    {
+        float MetersValue = CIRCONFERENCE*EncoderValue/3200;
+
+        return MetersValue; 
+    }
+
+
 
     void initPID()
     {
@@ -132,11 +147,19 @@ public:
         doc["isGoal"] = pid_.isAtGoal();
         doc["actualTime"] = pid_.getActualDt();
 
+        unsigned long encoderValue = AX_.readEncoder(0);
+
+        doc["TravelledDistance"] = this->pulseToMeter(encoderValue);
+
+        Serial.print("Meters : "); 
+        Serial.println(this->pulseToMeter(encoderValue));    
+
         // Serialisation
         serializeJson(doc, Serial);
         // Envoit
         Serial.println();
         shouldSend_ = false;
+
     }
 
     void readJSON(bool& shouldRead_)

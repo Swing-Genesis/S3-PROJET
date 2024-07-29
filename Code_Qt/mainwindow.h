@@ -69,6 +69,8 @@ private:
     void connectTextInputs();
     void connectComboBox();
     void portCensus();
+    float previousTime_ = 0.0;
+    double energy_;
 
 
     bool magnetOn;

@@ -146,14 +146,9 @@ public:
         doc["gyroZ"] = imu_.getGyroZ();
         doc["isGoal"] = pid_.isAtGoal();
         doc["actualTime"] = pid_.getActualDt();
+        doc["TravelledDistance"] = this->pulseToMeter(AX_.readEncoder(0));
 
-        unsigned long encoderValue = AX_.readEncoder(0);
-
-        doc["TravelledDistance"] = this->pulseToMeter(encoderValue);
-
-        Serial.print("Meters : "); 
-        Serial.println(this->pulseToMeter(encoderValue));    
-
+    
         // Serialisation
         serializeJson(doc, Serial);
         // Envoit

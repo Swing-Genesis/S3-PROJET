@@ -79,21 +79,26 @@ void MainWindow::receiveFromSerial(QString msg){
                 double time = jsonObj["time"].toDouble();
 
                 double power = current * voltage;
-                double previousTime = 0.0;
-                double energy = 0.0;
 
-                if (previousTime != 0.0)
+
+                double timeSeconds = time / 1000.0;
+
+                double DeltaTime = timeSeconds - previousTime_;
+
+
+                if (previousTime_ != 0.0)
                 {
-                    double DeltaTime = time - previousTime;
+                    energy_ = power * DeltaTime + energy_;
 
-                    energy = power * DeltaTime;
+
+
                 }
+                    previousTime_ = timeSeconds;
 
-                ui->Power_Display->display(power);
-                ui->Energy_Display->display(energy); //not sure this works
+                     ui->Power_Display->display(power);
+                       ui->Energy_Display->display(energy_);
 
-              //  ui->Power_Display->setStyleSheet("QLCDNumber { background-color: black; color: blue; }");
-              //  ui->Energy_Display->setStyleSheet("QLCDNumber { background-color: black; color: blue; }");
+
 
 
             }

@@ -126,24 +126,25 @@ void loop()
             {
                 fromStateStopPendulum = true;
                 firstLoop = true;
+                timerPid.enable();
                 robot.enablePID();
             }
-            if ((timerPid.toc() > 3) && robot.getPosition() < 0)
+            if ((timerPid.toc() > robot.time_stop_pendulum) && robot.getPosition() < 0)
             {
                 robot.disablePID();
-                //timerPid = 0;
+                timerPid.disable();
                 currentState = State::forward;
             }
-            else if ((timerPid.toc() > 3) && robot.getPosition() > 0)
+            else if ((timerPid.toc() > robot.time_stop_pendulum) && robot.getPosition() > 0)
             {
                 robot.disablePID();
-                //timerPid = 0;
+                timerPid.disable();
                 currentState = State::reverse;
             }
-            else if ((timerPid.toc() > 3))
+            else if ((timerPid.toc() > robot.time_stop_pendulum))
             {
                 robot.disablePID();
-                //timerPid = 0;
+                timerPid.disable();
                 currentState = State::wait;
             }
             break;

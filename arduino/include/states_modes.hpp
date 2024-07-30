@@ -10,13 +10,11 @@ enum Mode
 
 enum State
 {
-  st_wait = 0,
-  st_fwaccelerate = 1,
-  st_forward = 2,
-  st_decelerate = 3,
-  st_revaccelerate = 4,
-  st_reverse = 5,
-  st_stoppendulum = 6
+  wait = 0,
+  initReverse = 1,
+  forward = 2,
+  reverse = 3,
+  stopPendulum = 4
 };
 
 #endif //__STATES_HPP__

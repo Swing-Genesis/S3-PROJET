@@ -1,92 +1,58 @@
 #ifndef __SWING_ROBOT_HPP__
 #define __SWING_ROBOT_HPP__
 
-#include <LibS3GRO.h>
-
-#include <json_manager.hpp>
-#include <config.hpp>
-#include <states_modes.hpp>
+#include "LibS3GRO.h"
+#include "helpers.hpp"
+#include "config.hpp"
+#include "states_modes.hpp"
 
 class SwingRobot
 {
 private:
-    static SwingRobot* instance_;
+    /*
+    The current solution with static functions and a static instance pointer is indeed not ideal.
+    It's a workaround for a limitation in the design of the PID class,
+    which is expecting C-style function pointers instead of more flexible callable types.
+    */
+    static SwingRobot *instance_;
 
     /*----- Composants -----*/
     ArduinoX AX_;
-    JsonManager jsonManager();
     VexQuadEncoder vexEncoder_;
     IMU9DOF imu_;
-    PID pid_;
 
     /*----- Caractéristiques -----*/
-    State currentState;
-    double position;
-    bool isMagnetON = false;
-    float travalledDistance = 0.0; 
+    float position_;
+    bool isMagnetON_ = false;
+    float travelledDistance_ = 0.0;
 
-    /*----- Synchonisation du JSON -----*/
-
-    /*----- Constantes-----*/
-    static constexpr double RADIUS = 0.05; 
-    static constexpr double CIRCONFERENCE = 2*PI*RADIUS; 
-    static constexpr float PULSE_NUMBER = 3200.0f;  
-
-
-
-    float pulseToMeter(unsigned long EncoderValue)
-
-    {
-        float MetersValue = CIRCONFERENCE*EncoderValue/3200;
-
-        return MetersValue; 
-    }
-
-
+    /*----- PID -----*/
+    PID pid_;
+    float cmdCheck_;
 
     void initPID()
     {
         // Initialisation du PID
-        pid_.setGains(0.25,0.1 ,0);
+        pid_.setGains(0.20, 0, 0.07);
+
         // Attache des fonctions de retour
-        pid_.setMeasurementFunc(PIDmeasurement);
-        pid_.setCommandFunc(PIDcommand);
-        pid_.setAtGoalFunc(PIDgoalReached);
+        pid_.setMeasurementFunc(&SwingRobot::PIDmeasurement);
+        pid_.setCommandFunc(&SwingRobot::PIDcommand);
+        pid_.setAtGoalFunc(&SwingRobot::PIDgoalReached);
+
         pid_.setEpsilon(0.001);
         pid_.setPeriod(200);
     }
 
-    struct dataToSend {
-        unsigned long time;
-        int potVex;
-        double goal;
-        double measurements;
-    } dataToSend;
-
-    // Fonctions pour le PID
-    static double PIDmeasurement(){
-    // To do
-    }
-    static void PIDcommand(double cmd){
-    // To do
-    }
-    static void PIDgoalReached(){
-    // To do
-    }
-
-    static void isrWrapper() {
-        if (instance_) {
+    static void isrWrapper()
+    {
+        if (instance_)
+        {
             instance_->vexEncoder_.isr();
         }
     }
 
-    static double tickToMeters(int ticks_)
-    {
-        return ((ticks_/3200.0)*0.1*PI);
-    }
-
 public:
-
     SwingRobot()
     {
         instance_ = this;
@@ -96,8 +62,8 @@ public:
     {
         Serial.println("Initializing SwingRobot...");
         AX_.init();
-        imu_.init(); 
-        vexEncoder_.init(2,3);
+        imu_.init();
+        vexEncoder_.init(2, 3);
         attachInterrupt(vexEncoder_.getPinInt(), isrWrapper, FALLING);
 
         initPID();
@@ -106,9 +72,79 @@ public:
         AX_.setMotorPWM(1, 0);
     }
 
+    void enablePID()
+    {
+        pid_.enable();
+    }
+
+    void disablePID()
+    {
+        pid_.disable();
+    }
+
+    static double PIDmeasurement()
+    {
+        float analogValue = analogRead(POTENTIOMETER_PIN);
+        double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180) + 3); // 3 est un OFFSET ?
+        return pendulumAngle;
+    }
+
+    static void PIDcommand(double cmd)
+    {
+        SwingRobot *instance = SwingRobot::instance_;
+
+        instance->cmdCheck_ = cmd * 0.075;
+        instance->AX_.setMotorPWM(0, instance->cmdCheck_ * 0.35);
+    }
+
+    static void PIDgoalReached()
+    {
+        // TODO
+    }
+
     void setSpeed(float speed_)
     {
         AX_.setMotorPWM(0, speed_);
+    }
+
+    bool moveForward(float speed_, float toPosition__)
+    {
+        while (position_ < toPosition__)
+        {
+            position_ = Helpers::tickToMeters(AX_.readEncoder(0));
+            AX_.setMotorPWM(0, speed_);
+        }
+        return true;
+    }
+
+    bool moveForward(float speed_, float toPosition__, float dropPosition__)
+    {
+        while (position_ < toPosition__)
+        {
+            if (position_ > dropPosition__)
+            {
+                isMagnetON_ = false;
+            }
+            position_ = Helpers::tickToMeters(AX_.readEncoder(0));
+            AX_.setMotorPWM(0, speed_);
+        }
+        isMagnetON_ = true;
+        return true;
+    }
+
+    bool moveReverse(float speed_, float toPosition__)
+    {
+        while (position_ > toPosition__)
+        {
+            position_ = Helpers::tickToMeters(AX_.readEncoder(0));
+            AX_.setMotorPWM(0, speed_);
+        }
+        return true;
+    }
+
+    double getPosition()
+    {
+        return position_;
     }
 
     void enableMagnet()
@@ -123,12 +159,13 @@ public:
 
     bool getMagnetState()
     {
-        return isMagnetON;
+        return isMagnetON_;
     }
 
-    void sendJSON(bool& shouldSend_){
-        
-        StaticJsonDocument<500> doc;
+    void sendJSON(bool &shouldSend_)
+    {
+
+        JsonDocument doc;
         // Elements du message
 
         doc["time"] = millis();
@@ -137,7 +174,7 @@ public:
         doc["goal"] = pid_.getGoal();
         doc["measurements"] = PIDmeasurement();
         doc["voltage"] = AX_.getVoltage();
-        doc["current"] = AX_.getCurrent(); 
+        doc["current"] = AX_.getCurrent();
         doc["accelX"] = imu_.getAccelX();
         doc["accelY"] = imu_.getAccelY();
         doc["accelZ"] = imu_.getAccelZ();
@@ -149,23 +186,22 @@ public:
 
         unsigned long encoderValue = AX_.readEncoder(0);
 
-        doc["TravelledDistance"] = this->pulseToMeter(encoderValue);
+        doc["TravelledDistance"] = Helpers::tickToMeters(encoderValue);
 
-        Serial.print("Meters : "); 
-        Serial.println(this->pulseToMeter(encoderValue));    
+        Serial.print("Meters : ");
+        Serial.println(Helpers::tickToMeters(encoderValue));
 
         // Serialisation
         serializeJson(doc, Serial);
         // Envoit
         Serial.println();
         shouldSend_ = false;
-
     }
 
-    void readJSON(bool& shouldRead_)
+    void readJSON(bool &shouldRead_)
     {
         // Lecture du message Json
-        StaticJsonDocument<500> doc;
+        JsonDocument doc;
         JsonVariant parse_msg;
 
         // Lecture sur le port Seriel
@@ -173,14 +209,16 @@ public:
         shouldRead_ = false;
 
         // Si erreur dans le message
-        if (error) {
+        if (error)
+        {
             Serial.print("deserialize() failed: ");
             Serial.println(error.c_str());
             return;
         }
 
         parse_msg = doc["setGoal"];
-        if(!parse_msg.isNull()){
+        if (!parse_msg.isNull())
+        {
             pid_.disable();
             pid_.setGains(doc["setGoal"][0], doc["setGoal"][1], doc["setGoal"][2]);
             pid_.setEpsilon(doc["setGoal"][3]);
@@ -189,16 +227,14 @@ public:
         }
 
         parse_msg = doc["magnet"];
-        if(!parse_msg.isNull()){
-            isMagnetON = doc["magnet"].as<bool>();
+        if (!parse_msg.isNull())
+        {
+            isMagnetON_ = doc["magnet"].as<bool>();
         }
     }
-    
 };
 
 // Initialize static member
-SwingRobot* SwingRobot::instance_ = nullptr;
-
-
+SwingRobot *SwingRobot::instance_ = nullptr;
 
 #endif //__SWING_ROBOT_HPP__

@@ -54,7 +54,8 @@ void setup()
 void loop()
 {
     double to_position = 0;
-    currentState = State::PIDtest;
+    currentState = State::emergencyStop;
+    //currentState = State::PIDtest;
     if (digitalRead(LEFT_BUTTON))
     {
         if (isRunning)

@@ -4,56 +4,42 @@
 #include <Arduino.h>
 
 class Timer {
-public:
-    Timer();
-    void setDelay(unsigned long delay);
-    void setCallback(void (*callback)());
-    void enable();
-    void disable();
-    void update();
-    unsigned long toc();  // Method to get elapsed time
-
 private:
-    unsigned long delay_;
-    unsigned long lastMillis_;
-    void (*callback_)();
-    bool enabled_;
-    unsigned long startMillis_;  // To track start time
-};
+    unsigned long startTime;
+    unsigned long endTime;
+    bool running;
+    bool enabled;
 
-// Implementation of Timer methods
+public:
+    Timer() : startTime(0), endTime(0), running(false) {}
 
-Timer::Timer() : delay_(0), lastMillis_(0), callback_(nullptr), enabled_(false), startMillis_(0) {}
-
-void Timer::setDelay(unsigned long delay) {
-    delay_ = delay;
-}
-
-void Timer::setCallback(void (*callback)()) {
-    callback_ = callback;
-}
-
-void Timer::enable() {
-    enabled_ = true;
-    lastMillis_ = millis();
-    startMillis_ = millis();
-}
-
-void Timer::disable() {
-    enabled_ = false;
-}
-
-void Timer::update() {
-    if (enabled_ && (millis() - lastMillis_ >= delay_)) {
-        lastMillis_ = millis();
-        if (callback_) {
-            callback_();
-        }
+    void tic() {
+        startTime = millis();
+        running = true;
     }
-}
 
-unsigned long Timer::toc() {
-    return millis() - startMillis_;
-}
+    unsigned long toc() {
+        if (running) {
+            endTime = millis();
+            running = false;
+            return endTime - startTime;
+        }
+        return 0; // Return 0 if tic() wasn't called before
+    }
+
+    float tocSeconds() {
+        return toc() / 1000.0f;
+    }
+
+    bool isRunning() const {
+        return running;
+    }
+
+    void reset() {
+        startTime = 0;
+        endTime = 0;
+        running = false;
+    }
+};
 
 #endif // TIMER_HPP

@@ -20,32 +20,27 @@ private:
     ArduinoX AX_;
     VexQuadEncoder vexEncoder_;
     IMU9DOF imu_;
+    PID pid_;
 
     /*----- Caractéristiques -----*/
     float position_;
     bool isMagnetON_ = false;
     float travelledDistance_ = 0.0;
 
-    /*----- PID -----*/
-    PID pid_;
-    bool pidEnabled_ = false;
-    float cmdCheck_;
 
+    // void initPID()
+    // {
+    //     // Initialisation du PID
+    //     pid_.setGains(kp, ki, kd);
 
+    //     // Attache des fonctions de retour
+    //     pid_.setMeasurementFunc(&SwingRobot::PIDmeasurement);
+    //     pid_.setCommandFunc(&SwingRobot::PIDcommand);
+    //     pid_.setAtGoalFunc(&SwingRobot::PIDgoalReached);
 
-    void initPID()
-    {
-        // Initialisation du PID
-        pid_.setGains(kp, ki, kd);
-
-        // Attache des fonctions de retour
-        pid_.setMeasurementFunc(&SwingRobot::PIDmeasurement);
-        pid_.setCommandFunc(&SwingRobot::PIDcommand);
-        pid_.setAtGoalFunc(&SwingRobot::PIDgoalReached);
-
-        pid_.setEpsilon(0.001);
-        pid_.setPeriod(200);
-    }
+    //     pid_.setEpsilon(0.001);
+    //     pid_.setPeriod(200);
+    // }
 
     static void isrWrapper()
     {
@@ -69,8 +64,9 @@ public:
     float ki = 0;
     float kd = 0.07;
 
-    SwingRobot()
+    SwingRobot(PID pid)
     {
+        pid_ = pid;
         instance_ = this;
     }
 
@@ -82,55 +78,55 @@ public:
         vexEncoder_.init(2, 3);
         attachInterrupt(vexEncoder_.getPinInt(), isrWrapper, FALLING);
 
-        initPID();
+        //initPID();
 
         AX_.setMotorPWM(0, 0);
         AX_.setMotorPWM(1, 0);
     }
 
-    void enablePID()
-    {
-        pid_.enable();
-        pidEnabled_ = true;
-    }
+    // void enablePID()
+    // {
+    //     pid_.enable();
+    //     pidEnabled_ = true;
+    // }
 
-    void disablePID()
-    {
-        pid_.disable();
-        pidEnabled_ = false;
-    }
+    // void disablePID()
+    // {
+    //     pid_.disable();
+    //     pidEnabled_ = false;
+    // }
 
-    void runPID()
-    {
-        pid_.run();
-    }
+    // void runPID()
+    // {
+    //     pid_.run();
+    // }
 
-    bool getPIDState()
-    {
-        return pidEnabled_;
-    }
+    // bool getPIDState()
+    // {
+    //     return pidEnabled_;
+    // }
 
-    static double PIDmeasurement()
-    {
-        printf("PIDmeasurement\n");
-        float analogValue = analogRead(POTENTIOMETER_PIN);
-        double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180) + 3); // 3 est un OFFSET ?
-        return pendulumAngle;
-    }
+    // static double PIDmeasurement()
+    // {
+    //     printf("PIDmeasurement\n");
+    //     float analogValue = analogRead(POTENTIOMETER_PIN);
+    //     double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180) + 3); // 3 est un OFFSET ?
+    //     return pendulumAngle;
+    // }
 
-    static void PIDcommand(double cmd)
-    {
-        printf("cmd : %f\n", cmd);
-        SwingRobot *instance = SwingRobot::instance_;
+    // static void PIDcommand(double cmd)
+    // {
+    //     printf("cmd : %f\n", cmd);
+    //     SwingRobot *instance = SwingRobot::instance_;
 
-        instance->cmdCheck_ = cmd * 0.075;
-        instance->AX_.setMotorPWM(0, instance->cmdCheck_ * 0.35);
-    }
+    //     instance->cmdCheck_ = cmd * 0.075;
+    //     instance->AX_.setMotorPWM(0, instance->cmdCheck_ * 0.35);
+    // }
 
-    static void PIDgoalReached()
-    {
-        // TODO
-    }
+    // static void PIDgoalReached()
+    // {
+    //     // TODO
+    // }
 
     void setSpeed(float speed_)
     {
@@ -202,7 +198,7 @@ public:
         doc["potVex"] = analogRead(POTENTIOMETER_PIN);
         doc["encVex"] = vexEncoder_.getCount();
         doc["goal"] = pid_.getGoal();
-        doc["measurements"] = PIDmeasurement();
+        //doc["measurements"] = PIDmeasurement();
         doc["voltage"] = AX_.getVoltage();
         doc["current"] = AX_.getCurrent();
         doc["accelX"] = imu_.getAccelX();

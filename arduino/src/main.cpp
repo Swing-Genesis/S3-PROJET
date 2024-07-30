@@ -15,8 +15,6 @@
 
 /*---------------------------- variables globales ---------------------------*/
 
-SwingRobot robot;
-
 // Timer pour json
 SoftTimer timerSendMsg_;
 bool shouldRead_ = false;
@@ -34,8 +32,15 @@ bool firstLoop = true;
 const float BACKLIMIT = -0.12;
 const float FRONTLIMIT = 0.9;
 
-Timer timerPid;
+/*----- PID -----*/
+PID pid_;
+Timer timerPID;
+double PIDmeasurement();
+void PIDcommand(double cmd);
+void PIDgoalReached();
+float cmdCheck;
 
+SwingRobot robot(pid_);
 
 void setup()
 {
@@ -49,6 +54,16 @@ void setup()
     timerSendMsg_.setDelay(UPDATE_PERIODE);
     timerSendMsg_.setCallback(timerCallback);
     timerSendMsg_.enable();
+
+    pid_.setGains(0.20, 0 , 0.07);
+    // Attache des fonctions de retour
+    pid_.setMeasurementFunc(PIDmeasurement);
+    pid_.setCommandFunc(PIDcommand);
+    //pid_.setAtGoalFunc(PIDgoalReached);
+    pid_.setEpsilon(0.001);
+    pid_.setPeriod(200);
+    pid_.setGoal(0);
+    pid_.enable();
 }
 
 void loop()
@@ -143,15 +158,15 @@ void loop()
                 Serial.println("NOT FIRST LOOP");
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = true;
-                timerPid.enable();
-                robot.enablePID();
-                robot.runPID();
+                timerPID.tic();
+                pid_.enable();
+                pid_.run();
 
-                if (timerPid.toc() > robot.time_stop_pendulum)
+                if (timerPID.toc() > robot.time_stop_pendulum)
                 {
 
-                    robot.disablePID();
-                    timerPid.disable();
+                    pid_.disable();
+                    timerPID.reset();
                     if (robot.getPosition() < 0)
                     {
                         Serial.println("FIRST CONDITION");
@@ -172,15 +187,51 @@ void loop()
             break;
         case State::emergencyStop:
             //Serial.println("st_emergency");
-            robot.disablePID();
+            pid_.disable();
             robot.disableMagnet();
             break;
         case State::PIDtest:
             Serial.println("PIDtest");
-            robot.enablePID();
-            robot.runPID();
+            pid_.run();
             break;
         }
+    }
+}
+
+// Fonctions pour le PID
+double PIDmeasurement(){
+
+  float analogValue = analogRead(POTENTIOMETER_PIN);
+  double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180)+3);
+  return pendulumAngle;
+}
+
+// the cmd calculated by compute command is then used with a weight to lower or augment speed
+void PIDcommand(double cmd){
+  cmdCheck = cmd*0.075;
+  robot.setSpeed(cmdCheck*0.35);
+}
+
+void PIDgoalReached(double pendulumAngle){
+    Timer timer;
+    bool timerON = false; 
+    if (abs(pendulumAngle < 15))
+    {
+      timer.tic();
+      timerON = true;
+    }
+    while (timerON)
+    {
+      pid_.run();
+      if (abs(pendulumAngle > 15))
+      {
+        timer.tic();
+        break;
+      }
+      if (timer.toc() > 0.5)
+      {
+          return; //valeur pour dire d<arreter PID
+      }
     }
 }
 

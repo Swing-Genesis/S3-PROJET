@@ -30,10 +30,12 @@ private:
     PID pid_;
     float cmdCheck_;
 
+
+
     void initPID()
     {
         // Initialisation du PID
-        pid_.setGains(0.20, 0, 0.07);
+        pid_.setGains(kp, ki, kd);
 
         // Attache des fonctions de retour
         pid_.setMeasurementFunc(&SwingRobot::PIDmeasurement);
@@ -53,6 +55,18 @@ private:
     }
 
 public:
+
+    // Position / vitesses
+    float init_reverse_position = -0.1;
+    float drop_position = 0.6;
+    float end_position = 0.8;
+    float slow_speed = 0.1;
+    float fast_speed = 0.9;
+
+    float kp = 0.20;
+    float ki = 0;
+    float kd = 0.07;
+
     SwingRobot()
     {
         instance_ = this;
@@ -117,11 +131,11 @@ public:
         return true;
     }
 
-    bool moveForward(float speed_, float toPosition__, float dropPosition__)
+    bool moveForward(float speed_, float toPosition__, float drop_position__)
     {
         while (position_ < toPosition__)
         {
-            if (position_ > dropPosition__)
+            if (position_ > drop_position__)
             {
                 isMagnetON_ = false;
             }
@@ -229,9 +243,69 @@ public:
         parse_msg = doc["magnet"];
         if (!parse_msg.isNull())
         {
-            isMagnetON_ = doc["magnet"].as<bool>();
+            // use doc["magnet"].as<bool>();
+            if (doc["magnet"].as<bool>())
+            {
+                enableMagnet();
+            }
+            else
+            {
+                disableMagnet();
+            }
         }
 
+        parse_msg = doc["slow_speed"];
+        if (!parse_msg.isNull())
+        {
+            if (doc["slow_speed"] > 0 && doc["slow_speed"] < fast_speed)
+            {
+                slow_speed = doc["slow_speed"];
+            }
+        }
+
+        parse_msg = doc["fast_speed"];
+        if (!parse_msg.isNull())
+        {
+            if (doc["fast_speed"] > 0 && doc["fast_speed"] > slow_speed)
+            {
+                fast_speed = doc["fast_speed"];
+            }
+        }
+
+        parse_msg = doc["drop_position"];
+        if (!parse_msg.isNull())
+        {
+            if (doc["drop_position"] > 0 && doc["drop_position"] < end_position)
+            {
+                drop_position = doc["drop_position"];
+            }
+            else
+            {
+                drop_position = end_position;
+            }
+        }
+
+        parse_msg = doc["end_position"];
+        if (!parse_msg.isNull())
+        {
+            if (doc["end_position"] > 0 && doc["end_position"] > drop_position)
+            {
+                end_position = doc["end_position"];
+            }
+            else
+            {
+                end_position = drop_position;
+            }
+        }   
+
+        parse_msg = doc["init_reverse_position"];
+        if (!parse_msg.isNull())
+        {
+            if (doc["init_reverse_position"] < 0)
+            {
+                init_reverse_position = doc["init_reverse_position"];
+            }
+        }  
         
     }
 };

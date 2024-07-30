@@ -30,11 +30,6 @@ bool isRunning = false;
 bool fromStateStopPendulum = false;
 bool firstLoop = false;
 
-// Position / vitesses
-const float DROP_POSITION = 0.6;
-const float END_POSITION = 0.8;
-const float SLOW_SPEED = 0.1;
-const float FAST_SPEED = 0.7;
 
 Timer timerPid;
 
@@ -83,7 +78,7 @@ void loop()
 
         case State::initReverse:
             Serial.println("st_initrev");
-            to_position = -0.1;
+            to_position = robot.init_reverse_position;
             fromStateStopPendulum = false;
             robot.moveReverse(-1, to_position) ? currentState = State::forward : currentState;
             Serial.println(robot.getPosition());
@@ -93,15 +88,18 @@ void loop()
             Serial.println("st_forward");
             if (!fromStateStopPendulum)
             {
-                to_position = 0.8;
-                robot.moveForward(FAST_SPEED, to_position, DROP_POSITION) ? currentState = State::reverse : currentState;
+                to_position = robot.end_position;
+                if (robot.moveForward(robot.fast_speed, to_position, robot.drop_position)) {
+                    robot.disableMagnet();
+                }
+                robot.moveForward(robot.fast_speed, to_position, robot.end_position) ? currentState = State::reverse : currentState;
             }
             else
             {
                 fromStateStopPendulum = false;
                 robot.enableMagnet();
                 to_position = 0;
-                robot.moveForward(-SLOW_SPEED, to_position) ? currentState = State::wait : currentState;
+                robot.moveForward(-robot.fast_speed, to_position) ? currentState = State::wait : currentState;
             }
             break;
 
@@ -110,7 +108,7 @@ void loop()
             if (!fromStateStopPendulum)
             {
                 to_position = 0;
-                robot.moveReverse(-FAST_SPEED, to_position) ? currentState = State::stopPendulum : currentState;
+                robot.moveReverse(-robot.fast_speed, to_position) ? currentState = State::stopPendulum : currentState;
             }
             else
             {
@@ -118,7 +116,7 @@ void loop()
                 robot.disableMagnet();
                 to_position = 0;
 
-                robot.moveReverse(-SLOW_SPEED, to_position) ? currentState = State::wait : currentState;
+                robot.moveReverse(-robot.fast_speed, to_position) ? currentState = State::wait : currentState;
             }
             break;
 

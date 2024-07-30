@@ -118,10 +118,10 @@ void MainWindow::receiveFromSerial(QString msg){
 
             }
 
-            if (jsonObj.contains("encVex")) //Displaying Distance travelled
+            if (jsonObj.contains("distanceTravelled")) //Displaying Distance travelled
             {
-                double encoderValue = jsonObj["encVex"].toDouble();
-                displayDistance(encoderValue);
+                double distanceTravelled = jsonObj["encVex"].toDouble();
+                displayDistance(distanceTravelled);
             }
 
             if (jsonObj.contains("potVex"))
@@ -210,18 +210,29 @@ void MainWindow::changeJsonKeyValue(){
 
 void MainWindow::sendPID(){
     // Fonction SLOT pour envoyer les paramettres de pulse
-    double goal = ui->lineEdit_DesVal->text().toDouble();
-    double Kp = ui->lineEdit_Kp->text().toDouble();
-    double Ki = ui->lineEdit_Ki->text().toDouble();
-    double Kd = ui->lineEdit_Kd->text().toDouble();
-    double thresh = ui->lineEdit_Thresh->text().toDouble();
+    float goal = ui->lineEdit_DesVal->text().toFloat();
+    float kp = ui->lineEdit_Kp->text().toFloat();
+    float ki = ui->lineEdit_Ki->text().toFloat();
+    float kd = ui->lineEdit_Kd->text().toFloat();
+    float thresh = ui->lineEdit_Thresh->text().toFloat();
+    float slow_speed = ui->lineEdit_slowSpeed->text().toFloat();
+    float fast_speed = ui->lineEdit_fastSpeed->text().toFloat();
+    float drop_position = ui->lineEdit_dropPosition->text().toFloat();
+    float end_position = ui->lineEdit_endPosition->text().toFloat();
+    float init_reverse_position = ui->lineEdit_initReversePosition->text().toFloat();
     // pour minimiser le nombre de decimales( QString::number)
 
-    QJsonArray array = { QString::number(Kp, 'f', 2),
-                         QString::number(Ki, 'f', 2),
-                         QString::number(Kd, 'f', 2),
+    QJsonArray array = { QString::number(kp, 'f', 2),
+                         QString::number(ki, 'f', 2),
+                         QString::number(kd, 'f', 2),
                          QString::number(thresh, 'f', 2),
-                         QString::number(goal, 'f', 2)
+                         QString::number(goal, 'f', 2),
+                         QString::number(slow_speed, 'f', 2),
+                         QString::number(fast_speed, 'f', 2),
+                         QString::number(drop_position, 'f', 2),
+                         QString::number(end_position, 'f', 2),
+                         QString::number(init_reverse_position, 'f', 2)
+
                        };
     QJsonObject jsonObject
     {
@@ -383,23 +394,25 @@ void MainWindow::restMode()
 
 
 
-void MainWindow::displayDistance(double encoderValue) //Vérifier si cette technique marche pis fait pas juste afficher des gros jump de valeurs
+void MainWindow::displayDistance(double distanceTravelled) //Vérifier si cette technique marche pis fait pas juste afficher des gros jump de valeurs
 {
 
-    const double encoderCountsPerRevolution = 3200;
-    const double wheelCircumference = 0.628; // s'assurer que c'est good
+  //const double encoderCountsPerRevolution = 3200;
+  //const double wheelCircumference = 0.628; // s'assurer que c'est good
 
 
-    double revolutions = encoderValue / encoderCountsPerRevolution;
+  //double revolutions = encoderValue / encoderCountsPerRevolution;
 
 
-    double distance = revolutions * wheelCircumference;
+  //double distance = revolutions * wheelCircumference;
 
 
-    ui->distance_display->display(distance);
+    ui->distance_display->display(distanceTravelled);
 }
 
 void MainWindow::displayPendulum(double potVex)
 {
     ui->display_pendulum->display(potVex);
 }
+
+

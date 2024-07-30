@@ -55,8 +55,9 @@ private slots:
     void stopAuto();
     void manuelMode();
     void restMode();
-    void displayDistance(double encoderValue);
+    void displayDistance(double travelledDistance);
     void displayPendulum(double potVex);
+
 
 
 private:

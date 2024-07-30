@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>928</width>
-    <height>713</height>
+    <width>908</width>
+    <height>694</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -18,90 +18,32 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="4" column="6" colspan="2">
-     <widget class="QLabel" name="label_6">
+    <item row="50" column="8">
+     <widget class="QPushButton" name="pb_mode_man">
       <property name="text">
-       <string>Execice PID</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <string>MODE MAN</string>
       </property>
      </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>Port:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="6">
+     <widget class="QLabel" name="label_9">
+      <property name="text">
+       <string>Valeur Ki</string>
+      </property>
+     </widget>
+    </item>
+    <item row="32" column="6">
+     <widget class="QLCDNumber" name="Power_Display"/>
     </item>
     <item row="15" column="7">
-     <widget class="QLabel" name="label_13">
-      <property name="text">
-       <string>Energy Display:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="7">
-     <widget class="QLineEdit" name="lineEdit_Kd"/>
-    </item>
-    <item row="24" column="7">
-     <widget class="QPushButton" name="pb_rest">
-      <property name="text">
-       <string>REST</string>
-      </property>
-     </widget>
-    </item>
-    <item row="23" column="6">
-     <widget class="QPushButton" name="pb_start_auto">
-      <property name="text">
-       <string>START</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Duree (ms)</string>
-      </property>
-     </widget>
-    </item>
-    <item row="6" column="0" colspan="2">
-     <widget class="QLabel" name="label_pathCSV">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::AutoText</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="14" column="2">
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="18" column="7">
-     <widget class="QLCDNumber" name="display_pendulum"/>
-    </item>
-    <item row="5" column="0" colspan="2">
-     <widget class="QCheckBox" name="checkBox">
-      <property name="text">
-       <string>Enregistrement des donnees sous:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="15" column="6">
-     <widget class="QLabel" name="label_12">
-      <property name="text">
-       <string>Power Display:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="0" colspan="2">
-     <widget class="QPushButton" name="pulseButton">
-      <property name="text">
-       <string>Commande de pulse</string>
-      </property>
-     </widget>
+     <widget class="QLineEdit" name="lineEdit_dropPosition"/>
     </item>
     <item row="8" column="1">
      <widget class="QSpinBox" name="DurationBox">
@@ -119,6 +61,9 @@
       </property>
      </widget>
     </item>
+    <item row="7" column="7">
+     <widget class="QLineEdit" name="lineEdit_Kp"/>
+    </item>
     <item row="7" column="1">
      <widget class="QDoubleSpinBox" name="PWMBox">
       <property name="minimum">
@@ -132,31 +77,8 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
-     <widget class="QComboBox" name="comboBoxPort"/>
-    </item>
-    <item row="15" column="1">
-     <widget class="QLineEdit" name="JsonKey">
-      <property name="text">
-       <string>potVex</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="14" column="6" colspan="2">
-     <widget class="QPushButton" name="pushButton_Params">
-      <property name="text">
-       <string>Envoie Parametres</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="7">
-     <widget class="QLineEdit" name="lineEdit_Kp"/>
-    </item>
-    <item row="6" column="7">
-     <widget class="QLineEdit" name="lineEdit_DesVal"/>
+    <item row="32" column="7">
+     <widget class="QLCDNumber" name="Energy_Display"/>
     </item>
     <item row="4" column="3">
      <widget class="QLabel" name="label_4">
@@ -168,86 +90,37 @@
       </property>
      </widget>
     </item>
-    <item row="10" column="6">
-     <widget class="QLabel" name="label_11">
-      <property name="text">
-       <string>Seuil</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_5">
-      <property name="text">
-       <string>Port:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="18" column="6">
-     <widget class="QLCDNumber" name="distance_display"/>
-    </item>
-    <item row="16" column="7">
-     <widget class="QLCDNumber" name="Energy_Display"/>
-    </item>
-    <item row="10" column="7">
-     <widget class="QLineEdit" name="lineEdit_Thresh"/>
-    </item>
-    <item row="7" column="6">
-     <widget class="QLabel" name="label_8">
-      <property name="text">
-       <string>Valeur Kp</string>
-      </property>
-     </widget>
-    </item>
-    <item row="17" column="7">
-     <widget class="QLabel" name="label_15">
-      <property name="text">
-       <string>Pendulum Position:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="6">
-     <widget class="QLabel" name="label_9">
-      <property name="text">
-       <string>Valeur Ki</string>
-      </property>
-     </widget>
-    </item>
-    <item row="24" column="6">
-     <widget class="QPushButton" name="pb_stop_auto">
-      <property name="text">
-       <string>STOP</string>
-      </property>
-     </widget>
-    </item>
-    <item row="16" column="6">
-     <widget class="QLCDNumber" name="Power_Display"/>
-    </item>
-    <item row="5" column="3" rowspan="11">
-     <widget class="QTextBrowser" name="textBrowser">
-      <property name="font">
-       <font>
-        <pointsize>9</pointsize>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="15" column="0">
+    <item row="18" column="0">
      <widget class="QLabel" name="label_3">
       <property name="text">
        <string>Donnees brutes:</string>
       </property>
      </widget>
     </item>
-    <item row="8" column="7">
-     <widget class="QLineEdit" name="lineEdit_Ki"/>
+    <item row="4" column="4" rowspan="38">
+     <widget class="Line" name="line_3">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+     </widget>
     </item>
-    <item row="20" column="0" colspan="4">
-     <widget class="QChartView" name="graph"/>
-    </item>
-    <item row="6" column="6">
-     <widget class="QLabel" name="label_7">
+    <item row="9" column="0" colspan="2">
+     <widget class="QPushButton" name="pulseButton">
       <property name="text">
-       <string>Val. desiree</string>
+       <string>Commande de pulse</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="2">
+     <widget class="QLabel" name="label_pathCSV">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::AutoText</enum>
       </property>
      </widget>
     </item>
@@ -258,19 +131,94 @@
       </property>
      </widget>
     </item>
-    <item row="17" column="6">
+    <item row="8" column="7">
+     <widget class="QLineEdit" name="lineEdit_Ki"/>
+    </item>
+    <item row="10" column="7">
+     <widget class="QLineEdit" name="lineEdit_Thresh"/>
+    </item>
+    <item row="6" column="6">
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>PID goal</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="1">
+     <widget class="QLineEdit" name="JsonKey">
+      <property name="text">
+       <string>potVex</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="7">
+     <widget class="QLineEdit" name="lineEdit_DesVal"/>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="text">
+       <string>Duree (ms)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="34" column="6">
+     <widget class="QLabel" name="label_15">
+      <property name="text">
+       <string>Pendulum Position:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="7">
+     <widget class="QLineEdit" name="lineEdit_endPosition"/>
+    </item>
+    <item row="12" column="7">
+     <widget class="QLineEdit" name="lineEdit_slowSpeed"/>
+    </item>
+    <item row="31" column="8">
      <widget class="QLabel" name="label_14">
       <property name="text">
        <string>Travelled Distance:</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="4" rowspan="17">
-     <widget class="Line" name="line_3">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
+    <item row="32" column="8">
+     <widget class="QLCDNumber" name="distance_display"/>
+    </item>
+    <item row="4" column="1">
+     <widget class="QComboBox" name="comboBoxPort"/>
+    </item>
+    <item row="51" column="8">
+     <widget class="QPushButton" name="pb_rest">
+      <property name="text">
+       <string>REST</string>
       </property>
      </widget>
+    </item>
+    <item row="9" column="7">
+     <widget class="QLineEdit" name="lineEdit_Kd"/>
+    </item>
+    <item row="31" column="7">
+     <widget class="QLabel" name="label_13">
+      <property name="text">
+       <string>Energy Display:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="2">
+     <widget class="QCheckBox" name="checkBox">
+      <property name="text">
+       <string>Enregistrement des donnees sous:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="24" column="0" rowspan="19" colspan="4">
+     <widget class="QChartView" name="graph"/>
+    </item>
+    <item row="35" column="6">
+     <widget class="QLCDNumber" name="display_pendulum"/>
     </item>
     <item row="7" column="0">
      <widget class="QLabel" name="label">
@@ -279,31 +227,133 @@
       </property>
      </widget>
     </item>
-    <item row="19" column="6">
-     <widget class="QPushButton" name="pb_ElectroAimantON">
-      <property name="text">
-       <string>ElectroAimant ON</string>
+    <item row="5" column="3" rowspan="14">
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
       </property>
      </widget>
     </item>
-    <item row="19" column="7">
-     <widget class="QPushButton" name="pb_ElectroAimantOFF">
+    <item row="7" column="6">
+     <widget class="QLabel" name="label_8">
       <property name="text">
-       <string>ElectroAimant OFF</string>
+       <string>Valeur Kp</string>
       </property>
      </widget>
     </item>
-    <item row="21" column="6">
+    <item row="14" column="7">
+     <widget class="QLineEdit" name="lineEdit_fastSpeed"/>
+    </item>
+    <item row="10" column="6">
+     <widget class="QLabel" name="label_11">
+      <property name="text">
+       <string>Seuil</string>
+      </property>
+     </widget>
+    </item>
+    <item row="31" column="6">
+     <widget class="QLabel" name="label_12">
+      <property name="text">
+       <string>Power Display:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="6" colspan="3">
+     <widget class="QLabel" name="label_6">
+      <property name="text">
+       <string>Json sent</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="2">
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="7">
+     <widget class="QLineEdit" name="lineEdit_initReversePosition"/>
+    </item>
+    <item row="18" column="6" colspan="3">
+     <widget class="QPushButton" name="pushButton_Params">
+      <property name="text">
+       <string>Envoie Parametres</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="6">
+     <widget class="QLabel" name="label_16">
+      <property name="text">
+       <string>Slow Speed</string>
+      </property>
+     </widget>
+    </item>
+    <item row="14" column="6">
+     <widget class="QLabel" name="label_17">
+      <property name="text">
+       <string>Fast Speed</string>
+      </property>
+     </widget>
+    </item>
+    <item row="15" column="6">
+     <widget class="QLabel" name="label_18">
+      <property name="text">
+       <string>Drop Position</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="6">
+     <widget class="QLabel" name="label_19">
+      <property name="text">
+       <string>End Position </string>
+      </property>
+     </widget>
+    </item>
+    <item row="17" column="6">
+     <widget class="QLabel" name="label_20">
+      <property name="text">
+       <string>Init Reverse Position</string>
+      </property>
+     </widget>
+    </item>
+    <item row="39" column="6" colspan="2">
      <widget class="QPushButton" name="pb_mode_auto">
       <property name="text">
        <string>MODE AUTO</string>
       </property>
      </widget>
     </item>
-    <item row="23" column="7">
-     <widget class="QPushButton" name="pb_mode_man">
+    <item row="50" column="6" colspan="2">
+     <widget class="QPushButton" name="pb_start_auto">
       <property name="text">
-       <string>MODE MAN</string>
+       <string>START</string>
+      </property>
+     </widget>
+    </item>
+    <item row="51" column="6" colspan="2">
+     <widget class="QPushButton" name="pb_stop_auto">
+      <property name="text">
+       <string>STOP</string>
+      </property>
+     </widget>
+    </item>
+    <item row="24" column="6">
+     <widget class="QPushButton" name="pb_ElectroAimantON">
+      <property name="text">
+       <string>ElectroAimant ON</string>
+      </property>
+     </widget>
+    </item>
+    <item row="30" column="6">
+     <widget class="QPushButton" name="pb_ElectroAimantOFF">
+      <property name="text">
+       <string>ElectroAimant OFF</string>
       </property>
      </widget>
     </item>

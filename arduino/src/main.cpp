@@ -65,21 +65,27 @@ void setup()
 
 void loop()
 {
+    bool checkMR;
     double to_position = 0;
+    String tocString;
+    String tspString;
     //currentState = State::PIDtest;
     if (digitalRead(LEFT_BUTTON))
     {
-        if (isRunning)
+        if (isRunning) {
             isRunning = false;
-        else
+        }         
+        else {
             isRunning = true;
+        }
+            
         delay(500);
     }
 
-    if (shouldRead_)
-    {
-        robot.readJSON(shouldRead_);
-    }
+    // if (shouldRead_)
+    // {
+    //     robot.readJSON(shouldRead_);
+    // }
 
     if (!MANETTE)
     {
@@ -87,20 +93,41 @@ void loop()
         {
         case State::wait:
             robot.enableMagnet();
-            //Serial.println("st_wait");
-            isRunning ? currentState = State::initReverse : currentState;
+            Serial.println("st_wait");
+            //robot.moveReverse(-1, 0) ? currentState = State::forward : currentState;
+            
+            if (isRunning)
+            {
+                
+                if (robot.moveReverse(-0.1, 0))
+                { 
+                    //Serial.println(robot.getPosition());
+                    currentState = State::initReverse;
+                    
+                }
+                delay(1000);
+            }
+            
+            //isRunning ? currentState = State::initReverse : currentState;
             break;
 
         case State::initReverse:
-            //Serial.println("st_initrev");
+            Serial.println("st_initrev");
             to_position = robot.init_reverse_position;
             fromStateStopPendulum = false;
-            robot.moveReverse(-1, to_position) ? currentState = State::forward : currentState;
-            Serial.println(robot.getPosition());
+            checkMR = robot.moveReverse (1, to_position);
+            
+            if (checkMR)
+            {
+               // Serial.println(currentState);
+                currentState = State::forward;
+                //Serial.println(currentState);
+            }
+            //Serial.println(robot.getPosition());
             break;
 
         case State::forward:
-            //Serial.println("st_forward");
+            Serial.println("st_forward");
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
@@ -121,7 +148,7 @@ void loop()
             break;
 
         case State::reverse:
-            //Serial.println("st_reverse");
+            Serial.println("st_reverse");
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
@@ -152,7 +179,7 @@ void loop()
             } 
             else
             {
-                //Serial.println("NOT FIRST LOOP");
+                Serial.println("NOT FIRST LOOP");
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = true;
 
@@ -168,10 +195,10 @@ void loop()
                 } 
 
                 // prints timerPID.toc() for debugging
-                String tocString = String(timerPID.toc(), 4);
-                String tspString = String(robot.time_stop_pendulum, 4);
-                Serial.println("Toc : " + tocString);
-                Serial.println("Time stop pendulum : " + tspString);
+                //tocString = String(timerPID.toc(), 4);
+                //tspString = String(robot.time_stop_pendulum, 4);
+                //Serial.println("Toc : " + tocString);
+                //Serial.println("Time stop pendulum : " + tspString);
                 if (timerPID.toc() > robot.time_stop_pendulum)
                 {
 
@@ -197,9 +224,10 @@ void loop()
             }
             break;
         case State::emergencyStop:
-            //Serial.println("st_emergency");
+            Serial.println("st_emergency");
             pid_.disable();
             pidEnabled = false;
+            robot.setSpeed(0);
             robot.disableMagnet();
             break;
         case State::PIDtest:

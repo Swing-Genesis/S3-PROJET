@@ -23,7 +23,7 @@ private:
     PID pid_;
 
     /*----- Caractéristiques -----*/
-    float position_;
+    double position_;
     bool isMagnetON_ = false;
     float travelledDistance_ = 0.0;
 
@@ -53,7 +53,7 @@ private:
 public:
 
     // Position / vitesses
-    float init_reverse_position = -0.1;
+    float init_reverse_position = -0.9;
     float drop_position = 0.6;
     float end_position = 0.8;
     float slow_speed = 0.1;
@@ -82,6 +82,7 @@ public:
 
         AX_.setMotorPWM(0, 0);
         AX_.setMotorPWM(1, 0);
+        AX_.resetEncoder(0);
     }
 
     // void enablePID()
@@ -162,8 +163,10 @@ public:
     {
         while (position_ > toPosition__)
         {
+            //Serial.print("Position : ");
+            //Serial.println(position_);
             position_ = Helpers::tickToMeters(AX_.readEncoder(0));
-            AX_.setMotorPWM(0, speed_);
+            AX_.setMotorPWM(0, -speed_);
         }
         return true;
     }

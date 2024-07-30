@@ -71,6 +71,7 @@ private:
     void portCensus();
     float previousTime_ = 0.0;
     double energy_;
+    double power_;
 
 
     bool magnetOn;

@@ -9,6 +9,23 @@ MainWindow::MainWindow(int updateRate, QWidget *parent):
     ui = new Ui::MainWindow;
     ui->setupUi(this);
 
+    // Ajoute couleur au LCDNUMBER
+        auto powerPalette = ui->Power_Display->palette();
+        powerPalette.setColor(powerPalette.Light, QColor(0, 0, 0));
+        ui->Power_Display->setPalette(powerPalette);
+
+        auto energyPalette = ui->Energy_Display->palette();
+        energyPalette.setColor(energyPalette.Light, QColor(0, 0, 0));
+        ui->Energy_Display->setPalette(energyPalette);
+
+        auto pendulumPalette = ui->display_pendulum->palette();
+        pendulumPalette.setColor(pendulumPalette.Light, QColor(0, 0, 0));
+        ui->display_pendulum->setPalette(pendulumPalette);
+
+        auto distancePalette = ui->distance_display->palette();
+        distancePalette.setColor(distancePalette.Light, QColor(0, 0, 0));
+        ui->distance_display->setPalette(distancePalette);
+
     // Initialisation du graphique
     ui->graph->setChart(&chart_);
     chart_.setTitle("Donnees brutes");
@@ -78,7 +95,7 @@ void MainWindow::receiveFromSerial(QString msg){
                 double voltage = jsonObj["voltage"].toDouble();
                 double time = jsonObj["time"].toDouble();
 
-                double power = current * voltage;
+                power_ = current * voltage;
 
 
                 double timeSeconds = time / 1000.0;
@@ -88,18 +105,16 @@ void MainWindow::receiveFromSerial(QString msg){
 
                 if (previousTime_ != 0.0)
                 {
-                    energy_ = power * DeltaTime + energy_;
+                    energy_ = power_ * DeltaTime + energy_;
 
 
 
                 }
                     previousTime_ = timeSeconds;
 
-                     ui->Power_Display->display(power);
-                       ui->Energy_Display->display(energy_);
 
-
-
+                     ui->Power_Display->display(power_);
+                     ui->Energy_Display->display(energy_);
 
             }
 

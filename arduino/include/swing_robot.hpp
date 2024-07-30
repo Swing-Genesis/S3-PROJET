@@ -231,6 +231,8 @@ public:
         {
             isMagnetON_ = doc["magnet"].as<bool>();
         }
+
+        
     }
 };
 

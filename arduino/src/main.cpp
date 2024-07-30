@@ -8,8 +8,6 @@
 /*------------------------------ Librairies ---------------------------------*/
 #include <LibS3GRO.h>
 #include <ArduinoJson.h>
-
-
 #include "swing_robot.hpp"
 #include "config.hpp"
 #include "states_modes.hpp"
@@ -117,7 +115,7 @@ void loop()
             else
             {
                 fromStateStopPendulum = false;
-                robot.enableMagnet();
+                robot.disableMagnet();
                 to_position = 0;
 
                 robot.moveReverse(-SLOW_SPEED, to_position) ? currentState = State::wait : currentState;

@@ -28,10 +28,6 @@ bool isRunning = false;
 bool fromStateStopPendulum = false;
 bool firstLoop = true;
 
-// Emergency stop
-const float BACKLIMIT = -0.12;
-const float FRONTLIMIT = 0.9;
-
 /*----- PID -----*/
 PID pid_;
 Timer timerPID;
@@ -39,6 +35,7 @@ double PIDmeasurement();
 void PIDcommand(double cmd);
 void PIDgoalReached();
 float cmdCheck;
+bool pidEnabled = false;
 
 SwingRobot robot(pid_);
 
@@ -69,7 +66,7 @@ void setup()
 void loop()
 {
     double to_position = 0;
-    currentState = State::PIDtest;
+    //currentState = State::PIDtest;
     if (digitalRead(LEFT_BUTTON))
     {
         if (isRunning)
@@ -155,17 +152,31 @@ void loop()
             } 
             else
             {
-                Serial.println("NOT FIRST LOOP");
+                //Serial.println("NOT FIRST LOOP");
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = true;
-                timerPID.tic();
-                pid_.enable();
-                pid_.run();
 
+                if (!pidEnabled) {
+                    timerPID.tic();
+                    pidEnabled = true;
+                    pid_.enable();
+                    delay(100);
+                }
+                
+                if(pidEnabled){
+                    pid_.run();
+                } 
+
+                // prints timerPID.toc() for debugging
+                String tocString = String(timerPID.toc(), 4);
+                String tspString = String(robot.time_stop_pendulum, 4);
+                Serial.println("Toc : " + tocString);
+                Serial.println("Time stop pendulum : " + tspString);
                 if (timerPID.toc() > robot.time_stop_pendulum)
                 {
 
                     pid_.disable();
+                    pidEnabled = false;
                     timerPID.reset();
                     if (robot.getPosition() < 0)
                     {
@@ -188,10 +199,10 @@ void loop()
         case State::emergencyStop:
             //Serial.println("st_emergency");
             pid_.disable();
+            pidEnabled = false;
             robot.disableMagnet();
             break;
         case State::PIDtest:
-            Serial.println("PIDtest");
             pid_.run();
             break;
         }

@@ -245,6 +245,7 @@ public:
         parse_msg = doc["setGoal"];
         if (!parse_msg.isNull())
         {
+            Serial.println("QT sent setGoal");  
             pid_.disable();
             pid_.setGains(doc["setGoal"][0], doc["setGoal"][1], doc["setGoal"][2]);
             pid_.setEpsilon(doc["setGoal"][3]);
@@ -255,6 +256,7 @@ public:
         parse_msg = doc["magnet"];
         if (!parse_msg.isNull())
         {
+            Serial.println("QT changed magnet state");
             // use doc["magnet"].as<bool>();
             if (doc["magnet"].as<bool>())
             {
@@ -268,8 +270,10 @@ public:
 
         parse_msg = doc["slow_speed"];
         if (!parse_msg.isNull())
-        {
-            if (doc["slow_speed"] > 0 && doc["slow_speed"] < fast_speed)
+        {   
+            Serial.println("QT changed slow_speed");
+            float slow_speed_valid = doc["slow_speed"].as<float>();
+            if (slow_speed_valid > 0 && slow_speed_valid < fast_speed)
             {
                 slow_speed = doc["slow_speed"];
             }
@@ -278,7 +282,9 @@ public:
         parse_msg = doc["fast_speed"];
         if (!parse_msg.isNull())
         {
-            if (doc["fast_speed"] > 0 && doc["fast_speed"] > slow_speed)
+            Serial.println("QT changed fast_speed");
+            float fast_speed_valid = doc["fast_speed"].as<float>();
+            if (fast_speed_valid > 0 && fast_speed_valid > slow_speed)
             {
                 fast_speed = doc["fast_speed"];
             }
@@ -287,7 +293,9 @@ public:
         parse_msg = doc["drop_position"];
         if (!parse_msg.isNull())
         {
-            if (doc["drop_position"] > 0 && doc["drop_position"] < end_position)
+            Serial.println("QT changed drop_position");
+            float drop_position_valid = doc["drop_position"].as<float>();
+            if (drop_position_valid > 0 && drop_position_valid < end_position)
             {
                 drop_position = doc["drop_position"];
             }
@@ -300,7 +308,9 @@ public:
         parse_msg = doc["end_position"];
         if (!parse_msg.isNull())
         {
-            if (doc["end_position"] > 0 && doc["end_position"] > drop_position)
+            Serial.println("QT changed end_position");
+            float end_position_valid = doc["end_position"].as<float>();
+            if (end_position_valid > 0 && end_position_valid > drop_position)
             {
                 end_position = doc["end_position"];
             }
@@ -313,7 +323,9 @@ public:
         parse_msg = doc["init_reverse_position"];
         if (!parse_msg.isNull())
         {
-            if (doc["init_reverse_position"] < 0)
+            Serial.println("QT changed init_reverse_position");
+            float init_reverse_position_valid = doc["init_reverse_position"].as<float>();
+            if (init_reverse_position_valid < 0 && init_reverse_position_valid > -0.2)
             {
                 init_reverse_position = doc["init_reverse_position"];
             }
@@ -322,7 +334,9 @@ public:
         parse_msg = doc["time_stop_pendulum"];
         if (!parse_msg.isNull())
         {
-            if (doc["time_stop_pendulum"] > 0)
+            Serial.println("QT changed time_stop_pendulum");
+            float time_stop_pendulum_valid = doc["time_stop_pendulum"].as<float>();
+            if (time_stop_pendulum_valid > 0)
             {
                 time_stop_pendulum = doc["time_stop_pendulum"];
             }
@@ -330,7 +344,6 @@ public:
         
     }
 };
-
 // Initialize static member
 SwingRobot *SwingRobot::instance_ = nullptr;
 

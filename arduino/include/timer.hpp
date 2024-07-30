@@ -18,17 +18,19 @@ public:
         running = true;
     }
 
-    unsigned long toc() {
+    unsigned long toc() const {
         if (running) {
-            endTime = millis();
-            running = false;
-            return endTime - startTime;
+            return millis() - startTime;
         }
         return 0; // Return 0 if tic() wasn't called before
     }
 
-    float tocSeconds() {
+    float tocSeconds() const {
         return toc() / 1000.0f;
+    }
+
+    float tocSeconds() {
+        return toc();
     }
 
     bool isRunning() const {
@@ -37,7 +39,6 @@ public:
 
     void reset() {
         startTime = 0;
-        endTime = 0;
         running = false;
     }
 };

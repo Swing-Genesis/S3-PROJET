@@ -14,7 +14,9 @@ enum State
   initReverse = 1,
   forward = 2,
   reverse = 3,
-  stopPendulum = 4
+  stopPendulum = 4,
+  emergencyStop = 5,
+  PIDtest = 6
 };
 
 #endif //__STATES_HPP__

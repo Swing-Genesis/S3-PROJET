@@ -28,6 +28,7 @@ private:
 
     /*----- PID -----*/
     PID pid_;
+    bool pidEnabled_ = false;
     float cmdCheck_;
 
 
@@ -62,6 +63,7 @@ public:
     float end_position = 0.8;
     float slow_speed = 0.1;
     float fast_speed = 0.9;
+    float time_stop_pendulum = 3000;
 
     float kp = 0.20;
     float ki = 0;
@@ -89,15 +91,28 @@ public:
     void enablePID()
     {
         pid_.enable();
+        pidEnabled_ = true;
     }
 
     void disablePID()
     {
         pid_.disable();
+        pidEnabled_ = false;
+    }
+
+    void runPID()
+    {
+        pid_.run();
+    }
+
+    bool getPIDState()
+    {
+        return pidEnabled_;
     }
 
     static double PIDmeasurement()
     {
+        printf("PIDmeasurement\n");
         float analogValue = analogRead(POTENTIOMETER_PIN);
         double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180) + 3); // 3 est un OFFSET ?
         return pendulumAngle;
@@ -105,6 +120,7 @@ public:
 
     static void PIDcommand(double cmd)
     {
+        printf("cmd : %f\n", cmd);
         SwingRobot *instance = SwingRobot::instance_;
 
         instance->cmdCheck_ = cmd * 0.075;
@@ -306,6 +322,15 @@ public:
                 init_reverse_position = doc["init_reverse_position"];
             }
         }  
+
+        parse_msg = doc["time_stop_pendulum"];
+        if (!parse_msg.isNull())
+        {
+            if (doc["time_stop_pendulum"] > 0)
+            {
+                time_stop_pendulum = doc["time_stop_pendulum"];
+            }
+        }
         
     }
 };

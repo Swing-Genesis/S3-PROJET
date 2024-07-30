@@ -75,7 +75,6 @@ public:
     QLabel *label_6;
     QFrame *line;
     QLineEdit *lineEdit_initReversePosition;
-    QPushButton *pushButton_Params;
     QLabel *label_16;
     QLabel *label_17;
     QLabel *label_18;
@@ -84,8 +83,11 @@ public:
     QPushButton *pb_mode_auto;
     QPushButton *pb_start_auto;
     QPushButton *pb_stop_auto;
-    QPushButton *pb_ElectroAimantON;
     QPushButton *pb_ElectroAimantOFF;
+    QPushButton *pb_ElectroAimantON;
+    QLineEdit *lineEdit_timeStopPendulum;
+    QLabel *label_21;
+    QPushButton *pushButton_Params;
 
     void setupUi(QMainWindow *MainWindow)
     {
@@ -328,11 +330,6 @@ public:
 
         gridLayout->addWidget(lineEdit_initReversePosition, 17, 7, 1, 1);
 
-        pushButton_Params = new QPushButton(centralWidget);
-        pushButton_Params->setObjectName(QString::fromUtf8("pushButton_Params"));
-
-        gridLayout->addWidget(pushButton_Params, 18, 6, 1, 3);
-
         label_16 = new QLabel(centralWidget);
         label_16->setObjectName(QString::fromUtf8("label_16"));
 
@@ -373,15 +370,30 @@ public:
 
         gridLayout->addWidget(pb_stop_auto, 51, 6, 1, 2);
 
-        pb_ElectroAimantON = new QPushButton(centralWidget);
-        pb_ElectroAimantON->setObjectName(QString::fromUtf8("pb_ElectroAimantON"));
-
-        gridLayout->addWidget(pb_ElectroAimantON, 24, 6, 1, 1);
-
         pb_ElectroAimantOFF = new QPushButton(centralWidget);
         pb_ElectroAimantOFF->setObjectName(QString::fromUtf8("pb_ElectroAimantOFF"));
 
         gridLayout->addWidget(pb_ElectroAimantOFF, 30, 6, 1, 1);
+
+        pb_ElectroAimantON = new QPushButton(centralWidget);
+        pb_ElectroAimantON->setObjectName(QString::fromUtf8("pb_ElectroAimantON"));
+
+        gridLayout->addWidget(pb_ElectroAimantON, 30, 7, 1, 1);
+
+        lineEdit_timeStopPendulum = new QLineEdit(centralWidget);
+        lineEdit_timeStopPendulum->setObjectName(QString::fromUtf8("lineEdit_timeStopPendulum"));
+
+        gridLayout->addWidget(lineEdit_timeStopPendulum, 18, 7, 1, 1);
+
+        label_21 = new QLabel(centralWidget);
+        label_21->setObjectName(QString::fromUtf8("label_21"));
+
+        gridLayout->addWidget(label_21, 18, 6, 1, 1);
+
+        pushButton_Params = new QPushButton(centralWidget);
+        pushButton_Params->setObjectName(QString::fromUtf8("pushButton_Params"));
+
+        gridLayout->addWidget(pushButton_Params, 29, 6, 1, 3);
 
         MainWindow->setCentralWidget(centralWidget);
 
@@ -414,7 +426,6 @@ public:
         label_11->setText(QCoreApplication::translate("MainWindow", "Seuil", nullptr));
         label_12->setText(QCoreApplication::translate("MainWindow", "Power Display:", nullptr));
         label_6->setText(QCoreApplication::translate("MainWindow", "Json sent", nullptr));
-        pushButton_Params->setText(QCoreApplication::translate("MainWindow", "Envoie Parametres", nullptr));
         label_16->setText(QCoreApplication::translate("MainWindow", "Slow Speed", nullptr));
         label_17->setText(QCoreApplication::translate("MainWindow", "Fast Speed", nullptr));
         label_18->setText(QCoreApplication::translate("MainWindow", "Drop Position", nullptr));
@@ -423,8 +434,10 @@ public:
         pb_mode_auto->setText(QCoreApplication::translate("MainWindow", "MODE AUTO", nullptr));
         pb_start_auto->setText(QCoreApplication::translate("MainWindow", "START", nullptr));
         pb_stop_auto->setText(QCoreApplication::translate("MainWindow", "STOP", nullptr));
-        pb_ElectroAimantON->setText(QCoreApplication::translate("MainWindow", "ElectroAimant ON", nullptr));
         pb_ElectroAimantOFF->setText(QCoreApplication::translate("MainWindow", "ElectroAimant OFF", nullptr));
+        pb_ElectroAimantON->setText(QCoreApplication::translate("MainWindow", "ElectroAimant ON", nullptr));
+        label_21->setText(QCoreApplication::translate("MainWindow", "Time Stop Pend (ms)", nullptr));
+        pushButton_Params->setText(QCoreApplication::translate("MainWindow", "Envoie Parametres", nullptr));
     } // retranslateUi
 
 };

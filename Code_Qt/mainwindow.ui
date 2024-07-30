@@ -280,13 +280,6 @@
     <item row="17" column="7">
      <widget class="QLineEdit" name="lineEdit_initReversePosition"/>
     </item>
-    <item row="18" column="6" colspan="3">
-     <widget class="QPushButton" name="pushButton_Params">
-      <property name="text">
-       <string>Envoie Parametres</string>
-      </property>
-     </widget>
-    </item>
     <item row="12" column="6">
      <widget class="QLabel" name="label_16">
       <property name="text">
@@ -343,17 +336,34 @@
       </property>
      </widget>
     </item>
-    <item row="24" column="6">
+    <item row="30" column="6">
+     <widget class="QPushButton" name="pb_ElectroAimantOFF">
+      <property name="text">
+       <string>ElectroAimant OFF</string>
+      </property>
+     </widget>
+    </item>
+    <item row="30" column="7">
      <widget class="QPushButton" name="pb_ElectroAimantON">
       <property name="text">
        <string>ElectroAimant ON</string>
       </property>
      </widget>
     </item>
-    <item row="30" column="6">
-     <widget class="QPushButton" name="pb_ElectroAimantOFF">
+    <item row="18" column="7">
+     <widget class="QLineEdit" name="lineEdit_timeStopPendulum"/>
+    </item>
+    <item row="18" column="6">
+     <widget class="QLabel" name="label_21">
       <property name="text">
-       <string>ElectroAimant OFF</string>
+       <string>Time Stop Pend (ms)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="29" column="6" colspan="3">
+     <widget class="QPushButton" name="pushButton_Params">
+      <property name="text">
+       <string>Envoie Parametres</string>
       </property>
      </widget>
     </item>

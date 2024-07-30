@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MainWindow_t {
     QByteArrayData data[19];
-    char stringdata0[248];
+    char stringdata0[253];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -48,9 +48,9 @@ QT_MOC_LITERAL(12, 167, 8), // "stopAuto"
 QT_MOC_LITERAL(13, 176, 10), // "manuelMode"
 QT_MOC_LITERAL(14, 187, 8), // "restMode"
 QT_MOC_LITERAL(15, 196, 15), // "displayDistance"
-QT_MOC_LITERAL(16, 212, 12), // "encoderValue"
-QT_MOC_LITERAL(17, 225, 15), // "displayPendulum"
-QT_MOC_LITERAL(18, 241, 6) // "potVex"
+QT_MOC_LITERAL(16, 212, 17), // "travelledDistance"
+QT_MOC_LITERAL(17, 230, 15), // "displayPendulum"
+QT_MOC_LITERAL(18, 246, 6) // "potVex"
 
     },
     "MainWindow\0receiveFromSerial\0\0"
@@ -59,7 +59,8 @@ QT_MOC_LITERAL(18, 241, 6) // "potVex"
     "startSerialCom\0sendPID\0electroAimantStart\0"
     "electroAimantStop\0startAuto\0stopAuto\0"
     "manuelMode\0restMode\0displayDistance\0"
-    "encoderValue\0displayPendulum\0potVex"
+    "travelledDistance\0displayPendulum\0"
+    "potVex"
 };
 #undef QT_MOC_LITERAL
 

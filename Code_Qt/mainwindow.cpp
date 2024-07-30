@@ -220,6 +220,7 @@ void MainWindow::sendPID(){
     float drop_position = ui->lineEdit_dropPosition->text().toFloat();
     float end_position = ui->lineEdit_endPosition->text().toFloat();
     float init_reverse_position = ui->lineEdit_initReversePosition->text().toFloat();
+    float time_stop_pendulum = ui->lineEdit_timeStopPendulum->text().toFloat();
     // pour minimiser le nombre de decimales( QString::number)
 
     QJsonArray array = { QString::number(kp, 'f', 2),
@@ -231,7 +232,8 @@ void MainWindow::sendPID(){
                          QString::number(fast_speed, 'f', 2),
                          QString::number(drop_position, 'f', 2),
                          QString::number(end_position, 'f', 2),
-                         QString::number(init_reverse_position, 'f', 2)
+                         QString::number(init_reverse_position, 'f', 2),
+                         QString::number(time_stop_pendulum, 'f', 2),
 
                        };
     QJsonObject jsonObject

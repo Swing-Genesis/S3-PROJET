@@ -14,4 +14,8 @@
 
 #define MANETTE false 
 
+// Emergency stop
+#define FRONTLIMIT 0.9
+#define BACKLIMIT -0.12
+
 #endif // __CONFIG_HPP__

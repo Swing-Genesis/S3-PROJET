@@ -30,9 +30,7 @@ bool isRunning = false;
 bool fromStateStopPendulum = false;
 bool firstLoop = true;
 
-// Emergency stop
-const float BACKLIMIT = -0.12;
-const float FRONTLIMIT = 0.9;
+
 
 Timer timerPid;
 

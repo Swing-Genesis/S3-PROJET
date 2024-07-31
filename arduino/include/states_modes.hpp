@@ -11,12 +11,15 @@ enum Mode
 enum State
 {
   wait = 0,
-  initReverse = 1,
-  forward = 2,
-  reverse = 3,
-  stopPendulum = 4,
-  emergencyStop = 5,
-  PIDtest = 6
+  approach = 1,
+  miniReverse = 2,
+  forward = 3,
+  forwardAfterObstacle = 4,
+  reverse = 5,
+  stopPendulum = 6,
+  reverseIntoWall = 7,
+  emergencyStop = 8,
+  PIDtest = 9
 };
 
 #endif //__STATES_HPP__

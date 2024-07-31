@@ -53,9 +53,12 @@ private:
 public:
 
     // Position / vitesses
-    float initReversePosition = -0.1;
-    float dropPosition = 0.6;
-    float endPosition = 0.8;
+    // 1 sapin : end=0.80
+    // 2 sapin : end=0.85
+    float approachPosition = 0.50;
+    float approachSpeed = 0.4;
+    float dropPosition = 0.89;
+    float endPosition = 1.0;
     float slowSpeed = 0.1;
     float fastSpeed = 0.9;
     float timeStopPendulum = 3000;
@@ -305,76 +308,38 @@ public:
 
         parse_msg = doc["slowSpeed"];
         if (!parse_msg.isNull())
-        {   
-            //Serial.println("QT changed slowSpeed");
-            float slowSpeed_valid = doc["slowSpeed"].as<float>();
-            if (slowSpeed_valid > 0 && slowSpeed_valid < fastSpeed)
-            {
-                slowSpeed = doc["slowSpeed"];
-            }
+        {
+            slowSpeed = doc["slowSpeed"];
         }
 
         parse_msg = doc["fastSpeed"];
         if (!parse_msg.isNull())
         {
-            //Serial.println("QT changed fastSpeed");
-            float fastSpeed_valid = doc["fastSpeed"].as<float>();
-            if (fastSpeed_valid > 0 && fastSpeed_valid > slowSpeed)
-            {
-                fastSpeed = doc["fastSpeed"];
-            }
+            fastSpeed = doc["fastSpeed"][0];
         }
 
         parse_msg = doc["dropPosition"];
         if (!parse_msg.isNull())
         {
-            //Serial.println("QT changed dropPosition");
-            float dropPosition_valid = doc["dropPosition"].as<float>();
-            if (dropPosition_valid > 0 && dropPosition_valid < endPosition)
-            {
-                dropPosition = doc["dropPosition"];
-            }
-            else
-            {
-                dropPosition = endPosition;
-            }
+            dropPosition = doc["dropPosition"];
         }
 
         parse_msg = doc["endPosition"];
         if (!parse_msg.isNull())
         {
-            //Serial.println("QT changed endPosition");
-            float endPosition_valid = doc["endPosition"].as<float>();
-            if (endPosition_valid > 0 && endPosition_valid > dropPosition)
-            {
-                endPosition = doc["endPosition"];
-            }
-            else
-            {
-                endPosition = dropPosition;
-            }
+            endPosition = doc["endPosition"];
         }   
 
         parse_msg = doc["initReversePosition"];
         if (!parse_msg.isNull())
         {
-            //Serial.println("QT changed initReversePosition");
-            float initReversePosition_valid = doc["initReversePosition"].as<float>();
-            if (initReversePosition_valid < 0 && initReversePosition_valid > -0.2)
-            {
-                initReversePosition = doc["initReversePosition"];
-            }
+            approachPosition = doc["initReversePosition"];
         }  
 
         parse_msg = doc["timeStopPendulum"];
         if (!parse_msg.isNull())
         {
-            //Serial.println("QT changed timeStopPendulum");
-            float timeStopPendulum_valid = doc["timeStopPendulum"].as<float>();
-            if (timeStopPendulum_valid > 0)
-            {
-                timeStopPendulum = doc["timeStopPendulum"];
-            }
+            timeStopPendulum = doc["timeStopPendulum"];
         }
         
     }

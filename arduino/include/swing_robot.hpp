@@ -217,8 +217,8 @@ public:
 
         doc["TravelledDistance"] = Helpers::tickToMeters(encoderValue);
 
-        Serial.print("Meters : ");
-        Serial.println(Helpers::tickToMeters(encoderValue));
+        //Serial.print("Meters : ");
+        //Serial.println(Helpers::tickToMeters(encoderValue));
 
         // Serialisation
         serializeJson(doc, Serial);
@@ -248,7 +248,7 @@ public:
         parse_msg = doc["setGoal"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT sent setGoal");  
+            //Serial.println("QT sent setGoal");  
             pid_.disable();
             pid_.setGains(doc["setGoal"][0], doc["setGoal"][1], doc["setGoal"][2]);
             pid_.setEpsilon(doc["setGoal"][3]);
@@ -259,7 +259,7 @@ public:
         parse_msg = doc["magnet"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed magnet state");
+            //Serial.println("QT changed magnet state");
             // use doc["magnet"].as<bool>();
             if (doc["magnet"].as<bool>())
             {
@@ -274,7 +274,7 @@ public:
         parse_msg = doc["slowSpeed"];
         if (!parse_msg.isNull())
         {   
-            Serial.println("QT changed slowSpeed");
+            //Serial.println("QT changed slowSpeed");
             float slowSpeed_valid = doc["slowSpeed"].as<float>();
             if (slowSpeed_valid > 0 && slowSpeed_valid < fastSpeed)
             {
@@ -285,7 +285,7 @@ public:
         parse_msg = doc["fastSpeed"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed fastSpeed");
+            //Serial.println("QT changed fastSpeed");
             float fastSpeed_valid = doc["fastSpeed"].as<float>();
             if (fastSpeed_valid > 0 && fastSpeed_valid > slowSpeed)
             {
@@ -296,7 +296,7 @@ public:
         parse_msg = doc["dropPosition"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed dropPosition");
+            //Serial.println("QT changed dropPosition");
             float dropPosition_valid = doc["dropPosition"].as<float>();
             if (dropPosition_valid > 0 && dropPosition_valid < endPosition)
             {
@@ -311,7 +311,7 @@ public:
         parse_msg = doc["endPosition"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed endPosition");
+            //Serial.println("QT changed endPosition");
             float endPosition_valid = doc["endPosition"].as<float>();
             if (endPosition_valid > 0 && endPosition_valid > dropPosition)
             {
@@ -326,7 +326,7 @@ public:
         parse_msg = doc["initReversePosition"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed initReversePosition");
+            //Serial.println("QT changed initReversePosition");
             float initReversePosition_valid = doc["initReversePosition"].as<float>();
             if (initReversePosition_valid < 0 && initReversePosition_valid > -0.2)
             {
@@ -337,7 +337,7 @@ public:
         parse_msg = doc["timeStopPendulum"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed timeStopPendulum");
+            //Serial.println("QT changed timeStopPendulum");
             float timeStopPendulum_valid = doc["timeStopPendulum"].as<float>();
             if (timeStopPendulum_valid > 0)
             {

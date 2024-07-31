@@ -85,12 +85,10 @@ void loop()
 
     if (shouldRead_)
     {
-        Serial.println("read !");
         robot.readJSON(shouldRead_);
     }
     if (shouldSend_)
     {
-        Serial.println("Should Send !");
         robot.sendJSON(shouldSend_);
     }
 
@@ -100,7 +98,7 @@ void loop()
         {
         case State::wait:
             robot.enableMagnet();
-            Serial.println("st_wait");
+            //Serial.println("st_wait");
             
             if (isRunning)
             {
@@ -110,7 +108,7 @@ void loop()
             break;
 
         case State::initReverse:
-            Serial.println("st_initrev");
+            //Serial.println("st_initrev");
             toPosition = robot.initReversePosition;
             fromStateStopPendulum = false;
             
@@ -121,7 +119,7 @@ void loop()
             break;
 
         case State::forward:
-            Serial.println("st_forward");
+            //Serial.println("st_forward");
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
@@ -141,7 +139,7 @@ void loop()
             break;
 
         case State::reverse:
-            Serial.println("st_reverse");
+            //Serial.println("st_reverse");
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
@@ -160,10 +158,10 @@ void loop()
             break;
 
         case State::stopPendulum :
-            Serial.println("STOP PENDULUM");
+            //Serial.println("STOP PENDULUM");
             if (firstLoop)
             {
-                Serial.println("FIRST LOOP");
+                //Serial.println("FIRST LOOP");
                 firstLoop = false;
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 if (currentState != State::emergencyStop) {
@@ -172,7 +170,7 @@ void loop()
             } 
             else
             {
-                Serial.println("NOT FIRST LOOP");
+                //Serial.println("NOT FIRST LOOP");
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = true;
 
@@ -200,24 +198,24 @@ void loop()
                     timerPID.reset();
                     if (robot.getPosition() < 0)
                     {
-                        Serial.println("FIRST CONDITION");
+                        //Serial.println("FIRST CONDITION");
                         currentState = State::forward;
                     }
                     else if (robot.getPosition() > 0)
                     {
-                        Serial.println("SECOND CONDITION");
+                        //Serial.println("SECOND CONDITION");
                         currentState = State::reverse;
                     }
                     else
                     {
-                        Serial.println("THIRD CONDITION");
+                        //Serial.println("THIRD CONDITION");
                         currentState = State::wait;
                     }
                 }
             }
             break;
         case State::emergencyStop:
-            Serial.println("st_emergency");
+            //Serial.println("st_emergency");
             pid_.disable();
             pidEnabled = false;
             robot.setSpeed(0);

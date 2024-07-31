@@ -85,6 +85,11 @@ public:
         AX_.resetEncoder(0);
     }
 
+    void setPosition(float position)
+    {
+        this->position_ = position;
+    }
+
     // void enablePID()
     // {
     //     pid_.enable();
@@ -246,16 +251,22 @@ public:
             return;
         }
 
-        parse_msg = doc["setGoal"];
-        if (!parse_msg.isNull())
-        {
-            //Serial.println("QT sent setGoal");  
-            pid_.disable();
-            pid_.setGains(doc["setGoal"][0], doc["setGoal"][1], doc["setGoal"][2]);
-            pid_.setEpsilon(doc["setGoal"][3]);
-            pid_.setGoal(doc["setGoal"][4]);
-            pid_.enable();
-        }
+        // parse_msg = doc["settings"];
+        // if (!parse_msg.isNull())
+        // {
+        //     //Serial.println("QT sent setGoal");  
+        //     pid_.disable();
+        //     pid_.setGains(doc["settings"][0], doc["settings"][1], doc["settings"][2]);
+        //     pid_.setEpsilon(doc["settings"][3]);
+        //     slowSpeed = doc["settings"][4];
+        //     fastSpeed = doc["settings"][5];
+        //     dropPosition = doc["settings"][6];
+        //     endPosition = doc["settings"][7];
+        //     initReversePosition = doc["settings"][8];
+        //     initReversePosition = doc["settings"][9];
+        //     timeStopPendulum = doc["settings"][9];
+        //     pid_.enable();
+        // }
 
         parse_msg = doc["magnet"];
         if (!parse_msg.isNull())
@@ -271,6 +282,26 @@ public:
                 disableMagnet();
             }
         }
+
+        parse_msg = doc["Ki"];
+        if (!parse_msg.isNull())
+        {   
+            ki = doc["Ki"].as<float>();
+        }
+
+        parse_msg = doc["Kp"];
+        if (!parse_msg.isNull())
+        {   
+            kp = doc["Kp"].as<float>();
+        }
+
+        parse_msg = doc["Kd"];
+        if (!parse_msg.isNull())
+        {   
+            kd = doc["Kd"].as<float>();
+        }
+
+        pid_.setGains(kp,ki,kd);
 
         parse_msg = doc["slowSpeed"];
         if (!parse_msg.isNull())

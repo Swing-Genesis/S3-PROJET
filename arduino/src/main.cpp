@@ -75,6 +75,9 @@ void loop()
     {
         if (isRunning)
         {
+            currentState = State::wait;
+            robot.init();
+            robot.setPosition(0);
             isRunning = false;
         }
         else
@@ -113,7 +116,7 @@ void loop()
             toPosition = robot.initReversePosition;
             fromStateStopPendulum = false;
 
-            if (robot.moveReverse(1.0f, toPosition))
+            if (robot.moveReverse(robot.fastSpeed, toPosition))
             {
                 currentState = State::forward;
             }
@@ -136,7 +139,10 @@ void loop()
                 fromStateStopPendulum = false;
                 robot.enableMagnet();
                 toPosition = 0;
-                robot.moveForward(robot.fastSpeed, toPosition) ? currentState = State::wait : currentState;
+                if(robot.moveForward(robot.fastSpeed, toPosition))
+                {
+                    currentState = State::wait;
+                }
             }
             break;
 
@@ -144,13 +150,13 @@ void loop()
             //Serial.println("st_reverse");
             if (!fromStateStopPendulum)
             {
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 toPosition = 0;
                 robot.moveReverse(robot.fastSpeed, toPosition) ? currentState = State::stopPendulum : currentState;
             }
             else
             {
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = false;
                 robot.disableMagnet();
                 toPosition = 0;
@@ -165,7 +171,7 @@ void loop()
             {
                 // Serial.println("FIRST LOOP");
                 firstLoop = false;
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 if (currentState != State::emergencyStop)
                 {
                     currentState = State::forward;
@@ -174,7 +180,7 @@ void loop()
             else
             {
                 // Serial.println("NOT FIRST LOOP");
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = true;
 
                 if (!pidEnabled)

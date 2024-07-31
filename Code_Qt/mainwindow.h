@@ -57,6 +57,15 @@ private slots:
     void restMode();
     void displayDistance(double travelledDistance);
     void displayPendulum(double potVex);
+    void sendKp();
+    void sendKi();
+    void sendKd();
+    void sendDP();
+    void sendSS();
+    void sendFS();
+    void sendEP();
+    void sendInitReversePos();
+    void sendTimeStopPend();
 
 
 

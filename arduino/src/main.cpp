@@ -69,24 +69,24 @@ void loop()
     String tocString;
     String tspString;
 
-    currentState = State::PIDtest;
-    if (digitalRead(LEFT_BUTTON))
-    {
-        if (isRunning)
-        {
-            currentState = State::wait;
-            robot.init();
-            robot.setPosition(0);
-            firstLoop = true;
-            isRunning = false;
-        }
-        else
-        {
-            isRunning = true;
-        }
+    //currentState = State::PIDtest;
+    // if (digitalRead(LEFT_BUTTON))
+    // {
+    //     if (isRunning)
+    //     {
+    //         currentState = State::wait;
+    //         robot.init();
+    //         robot.setPosition(0);
+    //         firstLoop = true;
+    //         isRunning = false;
+    //     }
+    //     else
+    //     {
+    //         isRunning = true;
+    //     }
 
-        delay(500);
-    }
+    //     delay(500);
+    // }
 
     if(robot.autoActivated && !isRunning)
     {
@@ -164,7 +164,7 @@ void loop()
             break;
 
         case State::reverse:
-            toPosition = 0.70;
+            toPosition = 0.60;
             robot.moveReverse(robot.fastSpeed, toPosition) ? currentState = State::stopPendulum : currentState;
             break;
 
@@ -191,91 +191,17 @@ void loop()
             break;
 
         case State::reverseIntoWall:
-            toPosition = 0;
+            toPosition = -0.05;
             if(robot.moveReverse(0.3, toPosition))
             {
                 currentState = State::approach;
+                robot.init();
                 robot.setSpeed(0);
                 robot.enableMagnet();
+                robot.setPosition(0);
                 delay(2000);
             }
             break;
-        
-
-            // robot.setSpeed(0);
-            // robot.setPosition(0);
-            // delay(2000);
-            // fromStateStopPendulum = true;
-            // currentState = State::approach;
-
-            //Serial.println("STOP PENDULUM");
-        //     if (firstLoop)
-        //     {
-        //         // Serial.println("FIRST LOOP");
-        //         //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-        //         if (currentState != State::emergencyStop)
-        //         {
-        //             currentState = State::forward;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         // Serial.println("NOT FIRST LOOP");
-        //         //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-        //         fromStateStopPendulum = true;
-
-        //         if (!pidEnabled)
-        //         {
-        //             timerPID.tic();
-        //             pidEnabled = true;
-        //             pid_.enable();
-        //             delay(100);
-        //         }
-
-        //         if (pidEnabled)
-        //         {
-        //             pid_.run();
-        //         }
-
-        //         // prints timerPID.toc() for debugging
-        //         // tocString = String(timerPID.toc(), 4);
-        //         // tspString = String(robot.time_stop_pendulum, 4);
-        //         // Serial.println("Toc : " + tocString);
-        //         // Serial.println("Time stop pendulum : " + tspString);
-        //         if (timerPID.toc() > robot.timeStopPendulum)
-        //         {
-
-        //             pid_.disable();
-        //             pidEnabled = false;
-        //             timerPID.reset();
-        //             if (robot.getPosition() < 0)
-        //             {
-        //                 // Serial.println("FIRST CONDITION");
-        //                 currentState = State::forward;
-        //             }
-        //             else if (robot.getPosition() > 0)
-        //             {
-        //                 // Serial.println("SECOND CONDITION");
-        //                 currentState = State::reverse;
-        //             }
-        //             else
-        //             {
-        //                 // Serial.println("THIRD CONDITION");
-        //                 currentState = State::wait;
-        //             }
-        //         }
-        //     }
-        //     break;
-        case State::emergencyStop:
-            // Serial.println("st_emergency");
-            pid_.disable();
-            pidEnabled = false;
-            robot.setSpeed(0);
-            robot.disableMagnet();
-            break;
-        // case State::PIDtest:
-        //     pid_.run();
-        //     break;
         }
     }
     timerSendMsg_.update();

@@ -56,10 +56,10 @@ public:
     // Position / vitesses
     // 1 sapin : end=0.80
     // 2 sapin : end=0.85
-    float approachPosition = 0.50;
+    float approachPosition = 0.40;
     float approachSpeed = 0.4;
-    float dropPosition = 0.89;
-    float endPosition = 1.0;
+    float dropPosition = 0.91;
+    float endPosition = 1.00;
     float slowSpeed = 0.1;
     float fastSpeed = 0.9;
     float timeStopPendulum = 3000;
@@ -78,7 +78,6 @@ public:
 
     void init()
     {
-        Serial.println("Initializing SwingRobot...");
         AX_.init();
         imu_.init();
         vexEncoder_.init(2, 3);

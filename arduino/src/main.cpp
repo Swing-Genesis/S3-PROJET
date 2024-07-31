@@ -53,11 +53,11 @@ void setup()
     timerSendMsg_.setCallback(timerCallback);
     timerSendMsg_.enable();
 
-    pid_.setGains(0.20, 0 , 0.07);
+    pid_.setGains(0.20, 0, 0.07);
     // Attache des fonctions de retour
     pid_.setMeasurementFunc(PIDmeasurement);
     pid_.setCommandFunc(PIDcommand);
-    //pid_.setAtGoalFunc(PIDgoalReached);
+    // pid_.setAtGoalFunc(PIDgoalReached);
     pid_.setEpsilon(0.001);
     pid_.setPeriod(200);
     pid_.setGoal(0);
@@ -70,16 +70,18 @@ void loop()
     String tocString;
     String tspString;
 
-    //currentState = State::PIDtest;
+    // currentState = State::PIDtest;
     if (digitalRead(LEFT_BUTTON))
     {
-        if (isRunning) {
+        if (isRunning)
+        {
             isRunning = false;
-        }         
-        else {
+        }
+        else
+        {
             isRunning = true;
         }
-            
+
         delay(500);
     }
 
@@ -89,7 +91,7 @@ void loop()
     }
     if (shouldSend_)
     {
-        robot.sendJSON(shouldSend_);
+        // robot.sendJSON(shouldSend_);
     }
 
     if (!MANETTE)
@@ -98,8 +100,8 @@ void loop()
         {
         case State::wait:
             robot.enableMagnet();
-            //Serial.println("st_wait");
-            
+            Serial.println("st_wait");
+
             if (isRunning)
             {
                 currentState = State::initReverse;
@@ -108,38 +110,43 @@ void loop()
             break;
 
         case State::initReverse:
-            //Serial.println("st_initrev");
             toPosition = robot.initReversePosition;
             fromStateStopPendulum = false;
-            
+
             if (robot.moveReverse(1.0f, toPosition))
             {
                 currentState = State::forward;
             }
+
             break;
 
         case State::forward:
             //Serial.println("st_forward");
-            if (!fromStateStopPendulum)
+            toPosition = robot.endPosition;
+            if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition))
             {
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-                toPosition = robot.endPosition;
-                if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition)) {
-                    currentState = State::reverse;
-                }
+                currentState = State::reverse;
             }
-            else
-            {
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-                fromStateStopPendulum = false;
-                robot.enableMagnet();
-                toPosition = 0;
-                robot.moveForward(robot.fastSpeed, toPosition) ? currentState = State::wait : currentState;
-            }
+            // if (!fromStateStopPendulum)
+            // {
+            //     (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+            //     toPosition = robot.endPosition;
+            //     if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition)) {
+            //         currentState = State::reverse;
+            //     }
+            // }
+            // else
+            // {
+            //     (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+            //     fromStateStopPendulum = false;
+            //     robot.enableMagnet();
+            //     toPosition = 0;
+            //     robot.moveForward(robot.fastSpeed, toPosition) ? currentState = State::wait : currentState;
+            // }
             break;
 
         case State::reverse:
-            //Serial.println("st_reverse");
+            Serial.println("st_reverse");
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
@@ -157,39 +164,42 @@ void loop()
             }
             break;
 
-        case State::stopPendulum :
-            //Serial.println("STOP PENDULUM");
+        case State::stopPendulum:
+            Serial.println("STOP PENDULUM");
             if (firstLoop)
             {
-                //Serial.println("FIRST LOOP");
+                // Serial.println("FIRST LOOP");
                 firstLoop = false;
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-                if (currentState != State::emergencyStop) {
+                if (currentState != State::emergencyStop)
+                {
                     currentState = State::forward;
                 }
-            } 
+            }
             else
             {
-                //Serial.println("NOT FIRST LOOP");
+                // Serial.println("NOT FIRST LOOP");
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = true;
 
-                if (!pidEnabled) {
+                if (!pidEnabled)
+                {
                     timerPID.tic();
                     pidEnabled = true;
                     pid_.enable();
                     delay(100);
                 }
-                
-                if(pidEnabled){
+
+                if (pidEnabled)
+                {
                     pid_.run();
-                } 
+                }
 
                 // prints timerPID.toc() for debugging
-                //tocString = String(timerPID.toc(), 4);
-                //tspString = String(robot.time_stop_pendulum, 4);
-                //Serial.println("Toc : " + tocString);
-                //Serial.println("Time stop pendulum : " + tspString);
+                // tocString = String(timerPID.toc(), 4);
+                // tspString = String(robot.time_stop_pendulum, 4);
+                // Serial.println("Toc : " + tocString);
+                // Serial.println("Time stop pendulum : " + tspString);
                 if (timerPID.toc() > robot.timeStopPendulum)
                 {
 
@@ -198,24 +208,24 @@ void loop()
                     timerPID.reset();
                     if (robot.getPosition() < 0)
                     {
-                        //Serial.println("FIRST CONDITION");
+                        // Serial.println("FIRST CONDITION");
                         currentState = State::forward;
                     }
                     else if (robot.getPosition() > 0)
                     {
-                        //Serial.println("SECOND CONDITION");
+                        // Serial.println("SECOND CONDITION");
                         currentState = State::reverse;
                     }
                     else
                     {
-                        //Serial.println("THIRD CONDITION");
+                        // Serial.println("THIRD CONDITION");
                         currentState = State::wait;
                     }
                 }
             }
             break;
         case State::emergencyStop:
-            //Serial.println("st_emergency");
+            // Serial.println("st_emergency");
             pid_.disable();
             pidEnabled = false;
             robot.setSpeed(0);
@@ -230,39 +240,42 @@ void loop()
 }
 
 // Fonctions pour le PID
-double PIDmeasurement(){
+double PIDmeasurement()
+{
 
-  float analogValue = analogRead(POTENTIOMETER_PIN);
-  double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180)+3);
-  return pendulumAngle;
+    float analogValue = analogRead(POTENTIOMETER_PIN);
+    double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180) + 3);
+    return pendulumAngle;
 }
 
 // the cmd calculated by compute command is then used with a weight to lower or augment speed
-void PIDcommand(double cmd){
-  cmdCheck = cmd*0.075;
-  robot.setSpeed(cmdCheck*0.35);
+void PIDcommand(double cmd)
+{
+    cmdCheck = cmd * 0.075;
+    robot.setSpeed(cmdCheck * 0.35);
 }
 
-void PIDgoalReached(double pendulumAngle){
+void PIDgoalReached(double pendulumAngle)
+{
     Timer timer;
-    bool timerON = false; 
+    bool timerON = false;
     if (abs(pendulumAngle < 15))
     {
-      timer.tic();
-      timerON = true;
+        timer.tic();
+        timerON = true;
     }
     while (timerON)
     {
-      pid_.run();
-      if (abs(pendulumAngle > 15))
-      {
-        timer.tic();
-        break;
-      }
-      if (timer.toc() > 0.5)
-      {
-          return; //valeur pour dire d<arreter PID
-      }
+        pid_.run();
+        if (abs(pendulumAngle > 15))
+        {
+            timer.tic();
+            break;
+        }
+        if (timer.toc() > 0.5)
+        {
+            return; // valeur pour dire d<arreter PID
+        }
     }
 }
 

@@ -53,7 +53,7 @@ private:
 public:
 
     // Position / vitesses
-    float initReversePosition = -0.9;
+    float initReversePosition = -0.1;
     float dropPosition = 0.6;
     float endPosition = 0.8;
     float slowSpeed = 0.1;
@@ -134,39 +134,40 @@ public:
         AX_.setMotorPWM(0, speed_);
     }
 
-    bool moveForward(float speed_, float toPosition__)
+    bool moveForward(float speed_, float toPosition_)
     {
-        while (position_ < toPosition__)
+        if(position_ < toPosition_)
         {
             position_ = Helpers::tickToMeters(AX_.readEncoder(0));
             AX_.setMotorPWM(0, speed_);
+            return false;
         }
         return true;
     }
 
-    bool moveForward(float speed_, float toPosition__, float dropPosition__)
+    bool moveForward(float speed_, float toPosition_, float dropPosition_)
     {
-        while (position_ < toPosition__)
+        if(position_ < toPosition_)
         {
-            if (position_ > dropPosition__)
+            if (position_ > dropPosition_)
             {
                 this->disableMagnet();
             }
             position_ = Helpers::tickToMeters(AX_.readEncoder(0));
             AX_.setMotorPWM(0, speed_);
+            return false;
         }
         this->enableMagnet();
         return true;
     }
 
-    bool moveReverse(float speed_, float toPosition__)
+    bool moveReverse(float speed_, float toPosition_)
     {
-        while (position_ > toPosition__)
+        if(position_ > toPosition_)
         {
-            //Serial.print("Position : ");
-            //Serial.println(position_);
             position_ = Helpers::tickToMeters(AX_.readEncoder(0));
             AX_.setMotorPWM(0, -speed_);
+            return false;
         }
         return true;
     }

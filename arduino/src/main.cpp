@@ -122,27 +122,22 @@ void loop()
 
         case State::forward:
             //Serial.println("st_forward");
-            toPosition = robot.endPosition;
-            if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition))
+            if (!fromStateStopPendulum)
             {
-                currentState = State::reverse;
+                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                toPosition = robot.endPosition;
+                if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition)) {
+                    currentState = State::reverse;
+                }
             }
-            // if (!fromStateStopPendulum)
-            // {
-            //     (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-            //     toPosition = robot.endPosition;
-            //     if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition)) {
-            //         currentState = State::reverse;
-            //     }
-            // }
-            // else
-            // {
-            //     (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-            //     fromStateStopPendulum = false;
-            //     robot.enableMagnet();
-            //     toPosition = 0;
-            //     robot.moveForward(robot.fastSpeed, toPosition) ? currentState = State::wait : currentState;
-            // }
+            else
+            {
+                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                fromStateStopPendulum = false;
+                robot.enableMagnet();
+                toPosition = 0;
+                robot.moveForward(robot.fastSpeed, toPosition) ? currentState = State::wait : currentState;
+            }
             break;
 
         case State::reverse:

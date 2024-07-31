@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(int updateRate, QWidget *parent):
@@ -25,6 +25,12 @@ MainWindow::MainWindow(int updateRate, QWidget *parent):
         auto distancePalette = ui->distance_display->palette();
         distancePalette.setColor(distancePalette.Light, QColor(0, 0, 0));
         ui->distance_display->setPalette(distancePalette);
+
+        auto positionPalette = ui->display_pos->palette();
+        positionPalette.setColor(positionPalette.Light, QColor(0, 0, 0));
+        ui->display_pos->setPalette(positionPalette);
+
+
 
     // Initialisation du graphique
     ui->graph->setChart(&chart_);
@@ -124,6 +130,14 @@ void MainWindow::receiveFromSerial(QString msg){
                 displayDistance(distanceTravelled);
             }
 
+
+
+            if (jsonObj.contains("position"))
+            {
+                double position = jsonObj["position"].toDouble();
+                displayPosition(position);
+             }
+
             if (jsonObj.contains("potVex"))
             {
                 double potVexValue = jsonObj["potVex"].toDouble();
@@ -162,6 +176,8 @@ void MainWindow::connectButtons(){
     connect(ui->pb_mode_man, SIGNAL(clicked()), this, SLOT(manuelMode()));
     connect(ui->pb_start_auto, SIGNAL(clicked()), this, SLOT(startAuto()));
     connect(ui->pb_stop_auto, SIGNAL(clicked()), this, SLOT(stopAuto()));
+    connect(ui->pb_mode_auto, SIGNAL(clicked()), this, SLOT(modeAuto()));
+    connect(ui->pb_rest, SIGNAL(clicked()), this, SLOT(restMode()));
     connect(ui->pb_ElectroAimantON, SIGNAL(clicked()), this, SLOT(electroAimantStart()));
     connect(ui->pb_ElectroAimantOFF, SIGNAL(clicked()), this, SLOT(electroAimantStop()));
     connect(ui->pb_Kd, SIGNAL(clicked()), this, SLOT(sendKd()));
@@ -523,6 +539,19 @@ void MainWindow::electroAimantStop()
     sendMessage(strJson);
 }
 
+void MainWindow::modeAuto()
+{
+    bool modeAuto = true;
+    QJsonObject jsonObject {
+        {"modeAuto", modeAuto} //Vérifier variables du code avec nath
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+}
+
+
 
 void MainWindow::startAuto()
 {
@@ -550,16 +579,15 @@ void MainWindow::stopAuto()
 
 void MainWindow::manuelMode()
 {
-    bool startMan = true;
+    bool manuelMode = true;
     QJsonObject jsonObject {
-        {"startMan", startMan} //Vérifier variable avec nath
+        {"manuelMode", manuelMode} //Vérifier variable avec nath
     };
     QJsonDocument doc(jsonObject);
     QString strJson(doc.toJson(QJsonDocument::Compact));
     sendMessage(strJson);
 
 }
-
 
 
 void MainWindow::restMode()
@@ -598,5 +626,13 @@ void MainWindow::displayPendulum(double potVex)
 {
     ui->display_pendulum->display(potVex);
 }
+
+void MainWindow::displayPosition(double position)
+{
+    ui->display_pos->display(position);
+}
+
+
+
 
 

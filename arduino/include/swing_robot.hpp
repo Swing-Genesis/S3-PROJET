@@ -64,6 +64,8 @@ public:
     float fastSpeed = 0.9;
     float timeStopPendulum = 3000;
 
+    bool autoActivated = false;
+
     float kp = 0.20;
     float ki = 0;
     float kd = 0.07;
@@ -190,6 +192,7 @@ public:
         oldJSONtime = (millis()/1000.0f);
 
         doc["TravelledDistance"] = travelledDistance_;
+        doc["position"] = position_;
 
         //Serial.print("Meters : ");
         //Serial.println(Helpers::tickToMeters(encoderValue));
@@ -286,6 +289,12 @@ public:
         if (!parse_msg.isNull())
         {
             timeStopPendulum = doc["timeStopPendulum"];
+        }
+
+        parse_msg = doc["startAuto"];
+        if (!parse_msg.isNull())
+        {
+            autoActivated = doc["startAuto"].as<bool>();     
         }
         
     }

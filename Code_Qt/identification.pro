@@ -25,13 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
+        mainwindow.cpp \
         serialprotocol.cpp \
         csvwriter.cpp
 
 HEADERS += \
+        mainwindow.h \
         serialprotocol.h \
         csvwriter.h
 
-FORMS +=
+FORMS += \
+        mainwindow.ui
 
 DISTFILES +=

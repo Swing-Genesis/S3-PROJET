@@ -69,7 +69,7 @@ void loop()
     String tocString;
     String tspString;
 
-    // currentState = State::PIDtest;
+    currentState = State::PIDtest;
     if (digitalRead(LEFT_BUTTON))
     {
         if (isRunning)
@@ -86,6 +86,19 @@ void loop()
         }
 
         delay(500);
+    }
+
+    if(robot.autoActivated && !isRunning)
+    {
+        isRunning = true;
+    }
+    else if(!robot.autoActivated && isRunning)
+    {
+        currentState = State::wait;
+        robot.init();
+        robot.setPosition(0);
+        firstLoop = true;
+        isRunning = false;
     }
 
     if (shouldRead_)

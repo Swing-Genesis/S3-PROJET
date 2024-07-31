@@ -25,7 +25,8 @@ private:
     /*----- Caractéristiques -----*/
     double position_;
     bool isMagnetON_ = false;
-    float travelledDistance_ = 0.0;
+    float travelledDistance_ = 0.0f;
+    float oldJSONtime = 0.0f;
 
 
     // void initPID()
@@ -88,54 +89,15 @@ public:
         AX_.resetEncoder(0);
     }
 
+    float getTravelledDistance()
+    {
+        return travelledDistance_; 
+    }
+
     void setPosition(float position)
     {
         this->position_ = position;
     }
-
-    // void enablePID()
-    // {
-    //     pid_.enable();
-    //     pidEnabled_ = true;
-    // }
-
-    // void disablePID()
-    // {
-    //     pid_.disable();
-    //     pidEnabled_ = false;
-    // }
-
-    // void runPID()
-    // {
-    //     pid_.run();
-    // }
-
-    // bool getPIDState()
-    // {
-    //     return pidEnabled_;
-    // }
-
-    // static double PIDmeasurement()
-    // {
-    //     printf("PIDmeasurement\n");
-    //     float analogValue = analogRead(POTENTIOMETER_PIN);
-    //     double pendulumAngle = (Helpers::floatMap(analogValue, 170, 960, -180, 180) + 3); // 3 est un OFFSET ?
-    //     return pendulumAngle;
-    // }
-
-    // static void PIDcommand(double cmd)
-    // {
-    //     printf("cmd : %f\n", cmd);
-    //     SwingRobot *instance = SwingRobot::instance_;
-
-    //     instance->cmdCheck_ = cmd * 0.075;
-    //     instance->AX_.setMotorPWM(0, instance->cmdCheck_ * 0.35);
-    // }
-
-    // static void PIDgoalReached()
-    // {
-    //     // TODO
-    // }
 
     void setSpeed(float speed_)
     {
@@ -202,7 +164,6 @@ public:
 
     void sendJSON(bool &shouldSend_)
     {
-
         JsonDocument doc;
         // Elements du message
 
@@ -224,7 +185,11 @@ public:
 
         unsigned long encoderValue = AX_.readEncoder(0);
 
-        doc["TravelledDistance"] = Helpers::tickToMeters(encoderValue);
+        float deltaTime = (millis()/1000.0f) - oldJSONtime;
+        travelledDistance_ = travelledDistance_ + abs(deltaTime*position_);
+        oldJSONtime = (millis()/1000.0f);
+
+        doc["TravelledDistance"] = travelledDistance_;
 
         //Serial.print("Meters : ");
         //Serial.println(Helpers::tickToMeters(encoderValue));
@@ -254,28 +219,9 @@ public:
             return;
         }
 
-        // parse_msg = doc["settings"];
-        // if (!parse_msg.isNull())
-        // {
-        //     //Serial.println("QT sent setGoal");  
-        //     pid_.disable();
-        //     pid_.setGains(doc["settings"][0], doc["settings"][1], doc["settings"][2]);
-        //     pid_.setEpsilon(doc["settings"][3]);
-        //     slowSpeed = doc["settings"][4];
-        //     fastSpeed = doc["settings"][5];
-        //     dropPosition = doc["settings"][6];
-        //     endPosition = doc["settings"][7];
-        //     initReversePosition = doc["settings"][8];
-        //     initReversePosition = doc["settings"][9];
-        //     timeStopPendulum = doc["settings"][9];
-        //     pid_.enable();
-        // }
-
         parse_msg = doc["magnet"];
         if (!parse_msg.isNull())
         {
-            //Serial.println("QT changed magnet state");
-            // use doc["magnet"].as<bool>();
             if (doc["magnet"].as<bool>())
             {
                 enableMagnet();

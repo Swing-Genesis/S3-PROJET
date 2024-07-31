@@ -70,9 +70,6 @@ void loop()
     String tocString;
     String tspString;
 
-    Serial.print("Position : ");
-    Serial.println(robot.getPosition());
-
     //currentState = State::PIDtest;
     if (digitalRead(LEFT_BUTTON))
     {
@@ -88,10 +85,12 @@ void loop()
 
     if (shouldRead_)
     {
+        Serial.println("read !");
         robot.readJSON(shouldRead_);
     }
     if (shouldSend_)
     {
+        Serial.println("Should Send !");
         robot.sendJSON(shouldSend_);
     }
 
@@ -229,6 +228,7 @@ void loop()
             break;
         }
     }
+    timerSendMsg_.update();
 }
 
 // Fonctions pour le PID

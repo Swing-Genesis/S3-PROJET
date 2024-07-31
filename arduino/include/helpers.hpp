@@ -11,7 +11,7 @@ namespace Helpers
 
     double tickToMeters(int ticks_)
     {
-        return ((static_cast<double>(ticks_) / 3200.0) * 0.1 * PI);
+        return ((static_cast<double>(ticks_) / 3200.0) * 0.12 * PI);
     }
 } 
 

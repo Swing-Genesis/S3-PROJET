@@ -158,12 +158,21 @@ void MainWindow::connectButtons(){
     // Fonction de connection du boutton Send
     connect(ui->pulseButton, SIGNAL(clicked()), this, SLOT(sendPulseStart()));
     connect(ui->checkBox, SIGNAL(stateChanged(int)), this, SLOT(manageRecording(int)));
-    connect(ui->pushButton_Params, SIGNAL(clicked()), this, SLOT(sendPID()));
+    // connect(ui->pushButton_Params, SIGNAL(clicked()), this, SLOT(sendPID()));
     connect(ui->pb_mode_man, SIGNAL(clicked()), this, SLOT(manuelMode()));
     connect(ui->pb_start_auto, SIGNAL(clicked()), this, SLOT(startAuto()));
     connect(ui->pb_stop_auto, SIGNAL(clicked()), this, SLOT(stopAuto()));
     connect(ui->pb_ElectroAimantON, SIGNAL(clicked()), this, SLOT(electroAimantStart()));
     connect(ui->pb_ElectroAimantOFF, SIGNAL(clicked()), this, SLOT(electroAimantStop()));
+    connect(ui->pb_Kd, SIGNAL(clicked()), this, SLOT(sendKd()));
+    connect(ui->pb_Ki, SIGNAL(clicked()), this, SLOT(sendKi()));
+    connect(ui->pb_Kp, SIGNAL(clicked()), this, SLOT(sendKp()));
+    connect(ui->pb_SS, SIGNAL(clicked()), this, SLOT(sendSS()));
+    connect(ui->pb_FS, SIGNAL(clicked()), this, SLOT(sendFS()));
+    connect(ui->pb_EP, SIGNAL(clicked()), this, SLOT(sendEP()));
+    connect(ui->pb_DP, SIGNAL(clicked()), this, SLOT(sendDP()));
+    connect(ui->pb_TimeStopPend, SIGNAL(clicked()), this, SLOT(sendTimeStopPend()));
+    connect(ui->pb_InitRversePosition, SIGNAL(clicked()), this, SLOT(sendInitReversePos()));
 
 }
 
@@ -208,42 +217,215 @@ void MainWindow::changeJsonKeyValue(){
     JsonKey_ = ui->JsonKey->text();
 }
 
-void MainWindow::sendPID(){
-    // Fonction SLOT pour envoyer les paramettres de pulse
-    float goal = ui->lineEdit_DesVal->text().toFloat();
+//void MainWindow::sendPID(){
+//    // Fonction SLOT pour envoyer les paramettres de pulse
+//    float goal = ui->lineEdit_DesVal->text().toFloat();
+//    float kp = ui->lineEdit_Kp->text().toFloat();
+//    float ki = ui->lineEdit_Ki->text().toFloat();
+//    float kd = ui->lineEdit_Kd->text().toFloat();
+//    float thresh = ui->lineEdit_Thresh->text().toFloat();
+//    float slow_speed = ui->lineEdit_slowSpeed->text().toFloat();
+//    float fast_speed = ui->lineEdit_fastSpeed->text().toFloat();
+//    float drop_position = ui->lineEdit_dropPosition->text().toFloat();
+//    float end_position = ui->lineEdit_endPosition->text().toFloat();
+//    float init_reverse_position = ui->lineEdit_initReversePosition->text().toFloat();
+//    float time_stop_pendulum = ui->lineEdit_timeStopPendulum->text().toFloat();
+//    // pour minimiser le nombre de decimales( QString::number)
+//
+//    QJsonArray array = { QString::number(kp, 'f', 2),
+//                         QString::number(ki, 'f', 2),
+//                         QString::number(kd, 'f', 2),
+//                         QString::number(thresh, 'f', 2),
+//                         QString::number(goal, 'f', 2),
+//                         QString::number(slow_speed, 'f', 2),
+//                         QString::number(fast_speed, 'f', 2),
+//                         QString::number(drop_position, 'f', 2),
+//                         QString::number(end_position, 'f', 2),
+//                         QString::number(init_reverse_position, 'f', 2),
+//                         QString::number(time_stop_pendulum, 'f', 2)
+//
+//                       };
+//    QJsonObject jsonObject
+//    {
+//        {"setGoal", array}
+//    };
+//    QJsonDocument doc(jsonObject);
+//    QString strJson(doc.toJson(QJsonDocument::Compact));
+//    sendMessage(strJson);
+//}
+
+
+void MainWindow::sendKp()
+
+{
     float kp = ui->lineEdit_Kp->text().toFloat();
-    float ki = ui->lineEdit_Ki->text().toFloat();
-    float kd = ui->lineEdit_Kd->text().toFloat();
-    float thresh = ui->lineEdit_Thresh->text().toFloat();
-    float slow_speed = ui->lineEdit_slowSpeed->text().toFloat();
-    float fast_speed = ui->lineEdit_fastSpeed->text().toFloat();
-    float drop_position = ui->lineEdit_dropPosition->text().toFloat();
-    float end_position = ui->lineEdit_endPosition->text().toFloat();
-    float init_reverse_position = ui->lineEdit_initReversePosition->text().toFloat();
-    float time_stop_pendulum = ui->lineEdit_timeStopPendulum->text().toFloat();
-    // pour minimiser le nombre de decimales( QString::number)
 
-    QJsonArray array = { QString::number(kp, 'f', 2),
-                         QString::number(ki, 'f', 2),
-                         QString::number(kd, 'f', 2),
-                         QString::number(thresh, 'f', 2),
-                         QString::number(goal, 'f', 2),
-                         QString::number(slow_speed, 'f', 2),
-                         QString::number(fast_speed, 'f', 2),
-                         QString::number(drop_position, 'f', 2),
-                         QString::number(end_position, 'f', 2),
-                         QString::number(init_reverse_position, 'f', 2),
-                         QString::number(time_stop_pendulum, 'f', 2),
+    QJsonArray array = { QString::number(kp, 'f', 2),};
 
-                       };
+
     QJsonObject jsonObject
     {
-        {"setGoal", array}
+        {"Kp", array}
     };
     QJsonDocument doc(jsonObject);
     QString strJson(doc.toJson(QJsonDocument::Compact));
     sendMessage(strJson);
+
+
 }
+
+void MainWindow::sendKi()
+
+{
+    float ki = ui->lineEdit_Ki->text().toFloat();
+
+    QJsonArray array = { QString::number(ki, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"Ki", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+
+}
+
+void MainWindow::sendKd()
+
+{
+    float kd = ui->lineEdit_Kd->text().toFloat();
+
+    QJsonArray array = { QString::number(kd, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"Kd", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+
+}
+
+void MainWindow::sendSS()
+
+{
+    float SS = ui->lineEdit_slowSpeed->text().toFloat();
+
+    QJsonArray array = { QString::number(SS, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"slowSpeed", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+
+}
+
+void MainWindow::sendFS()
+
+{
+    float FS = ui->lineEdit_fastSpeed->text().toFloat();
+
+    QJsonArray array = { QString::number(FS, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"fastSpeed", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+}
+
+void MainWindow::sendEP()
+
+{
+    float EP = ui->lineEdit_endPosition->text().toFloat();
+
+    QJsonArray array = { QString::number(EP, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"endPosition", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+
+}
+
+void MainWindow::sendDP()
+
+{
+    float dp = ui->lineEdit_dropPosition->text().toFloat();
+
+    QJsonArray array = { QString::number(dp, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"dropPosition", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+
+}
+
+void MainWindow::sendInitReversePos()
+
+{
+    float RP = ui->lineEdit_initReversePosition->text().toFloat();
+
+    QJsonArray array = { QString::number(RP, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"initReversePosition", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+
+}
+
+void MainWindow::sendTimeStopPend()
+
+{
+    float TS = ui->lineEdit_timeStopPendulum->text().toFloat();
+
+    QJsonArray array = { QString::number(TS, 'f', 2),};
+
+
+    QJsonObject jsonObject
+    {
+        {"timeStopPendulum", array}
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+
+}
+
+
 void MainWindow::sendPulseSetting(){
     // Fonction SLOT pour envoyer les paramettres de pulse
     double PWM_val = ui->PWMBox->value();

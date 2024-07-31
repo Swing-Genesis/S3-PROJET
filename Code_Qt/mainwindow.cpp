@@ -523,6 +523,19 @@ void MainWindow::electroAimantStop()
     sendMessage(strJson);
 }
 
+void MainWindow::modeAuto()
+{
+    bool modeAuto = true;
+    QJsonObject jsonObject {
+        {"modeAuto", modeAuto} //Vérifier variables du code avec nath
+    };
+    QJsonDocument doc(jsonObject);
+    QString strJson(doc.toJson(QJsonDocument::Compact));
+    sendMessage(strJson);
+
+}
+
+
 
 void MainWindow::startAuto()
 {

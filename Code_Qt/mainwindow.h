@@ -51,6 +51,7 @@ private slots:
     void sendPID();
     void electroAimantStart();
     void electroAimantStop();
+    void modeAuto();
     void startAuto();
     void stopAuto();
     void manuelMode();

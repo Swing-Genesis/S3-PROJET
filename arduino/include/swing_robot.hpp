@@ -53,12 +53,12 @@ private:
 public:
 
     // Position / vitesses
-    float init_reverse_position = -0.9;
-    float drop_position = 0.6;
-    float end_position = 0.8;
-    float slow_speed = 0.1;
-    float fast_speed = 0.9;
-    float time_stop_pendulum = 3000;
+    float initReversePosition = -0.9;
+    float dropPosition = 0.6;
+    float endPosition = 0.8;
+    float slowSpeed = 0.1;
+    float fastSpeed = 0.9;
+    float timeStopPendulum = 3000;
 
     float kp = 0.20;
     float ki = 0;
@@ -144,18 +144,18 @@ public:
         return true;
     }
 
-    bool moveForward(float speed_, float toPosition__, float drop_position__)
+    bool moveForward(float speed_, float toPosition__, float dropPosition__)
     {
         while (position_ < toPosition__)
         {
-            if (position_ > drop_position__)
+            if (position_ > dropPosition__)
             {
-                isMagnetON_ = false;
+                this->disableMagnet();
             }
             position_ = Helpers::tickToMeters(AX_.readEncoder(0));
             AX_.setMotorPWM(0, speed_);
         }
-        isMagnetON_ = true;
+        this->enableMagnet();
         return true;
     }
 
@@ -271,77 +271,77 @@ public:
             }
         }
 
-        parse_msg = doc["slow_speed"];
+        parse_msg = doc["slowSpeed"];
         if (!parse_msg.isNull())
         {   
-            Serial.println("QT changed slow_speed");
-            float slow_speed_valid = doc["slow_speed"].as<float>();
-            if (slow_speed_valid > 0 && slow_speed_valid < fast_speed)
+            Serial.println("QT changed slowSpeed");
+            float slowSpeed_valid = doc["slowSpeed"].as<float>();
+            if (slowSpeed_valid > 0 && slowSpeed_valid < fastSpeed)
             {
-                slow_speed = doc["slow_speed"];
+                slowSpeed = doc["slowSpeed"];
             }
         }
 
-        parse_msg = doc["fast_speed"];
+        parse_msg = doc["fastSpeed"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed fast_speed");
-            float fast_speed_valid = doc["fast_speed"].as<float>();
-            if (fast_speed_valid > 0 && fast_speed_valid > slow_speed)
+            Serial.println("QT changed fastSpeed");
+            float fastSpeed_valid = doc["fastSpeed"].as<float>();
+            if (fastSpeed_valid > 0 && fastSpeed_valid > slowSpeed)
             {
-                fast_speed = doc["fast_speed"];
+                fastSpeed = doc["fastSpeed"];
             }
         }
 
-        parse_msg = doc["drop_position"];
+        parse_msg = doc["dropPosition"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed drop_position");
-            float drop_position_valid = doc["drop_position"].as<float>();
-            if (drop_position_valid > 0 && drop_position_valid < end_position)
+            Serial.println("QT changed dropPosition");
+            float dropPosition_valid = doc["dropPosition"].as<float>();
+            if (dropPosition_valid > 0 && dropPosition_valid < endPosition)
             {
-                drop_position = doc["drop_position"];
+                dropPosition = doc["dropPosition"];
             }
             else
             {
-                drop_position = end_position;
+                dropPosition = endPosition;
             }
         }
 
-        parse_msg = doc["end_position"];
+        parse_msg = doc["endPosition"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed end_position");
-            float end_position_valid = doc["end_position"].as<float>();
-            if (end_position_valid > 0 && end_position_valid > drop_position)
+            Serial.println("QT changed endPosition");
+            float endPosition_valid = doc["endPosition"].as<float>();
+            if (endPosition_valid > 0 && endPosition_valid > dropPosition)
             {
-                end_position = doc["end_position"];
+                endPosition = doc["endPosition"];
             }
             else
             {
-                end_position = drop_position;
+                endPosition = dropPosition;
             }
         }   
 
-        parse_msg = doc["init_reverse_position"];
+        parse_msg = doc["initReversePosition"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed init_reverse_position");
-            float init_reverse_position_valid = doc["init_reverse_position"].as<float>();
-            if (init_reverse_position_valid < 0 && init_reverse_position_valid > -0.2)
+            Serial.println("QT changed initReversePosition");
+            float initReversePosition_valid = doc["initReversePosition"].as<float>();
+            if (initReversePosition_valid < 0 && initReversePosition_valid > -0.2)
             {
-                init_reverse_position = doc["init_reverse_position"];
+                initReversePosition = doc["initReversePosition"];
             }
         }  
 
-        parse_msg = doc["time_stop_pendulum"];
+        parse_msg = doc["timeStopPendulum"];
         if (!parse_msg.isNull())
         {
-            Serial.println("QT changed time_stop_pendulum");
-            float time_stop_pendulum_valid = doc["time_stop_pendulum"].as<float>();
-            if (time_stop_pendulum_valid > 0)
+            Serial.println("QT changed timeStopPendulum");
+            float timeStopPendulum_valid = doc["timeStopPendulum"].as<float>();
+            if (timeStopPendulum_valid > 0)
             {
-                time_stop_pendulum = doc["time_stop_pendulum"];
+                timeStopPendulum = doc["timeStopPendulum"];
             }
         }
         

@@ -27,6 +27,7 @@ State currentState = State::wait;
 bool isRunning = false;
 bool fromStateStopPendulum = false;
 bool firstLoop = true;
+bool checkMR;
 
 /*----- PID -----*/
 PID pid_;
@@ -65,10 +66,13 @@ void setup()
 
 void loop()
 {
-    bool checkMR;
-    double to_position = 0;
+    double toPosition = 0;
     String tocString;
     String tspString;
+
+    Serial.print("Position : ");
+    Serial.println(robot.getPosition());
+
     //currentState = State::PIDtest;
     if (digitalRead(LEFT_BUTTON))
     {
@@ -82,10 +86,14 @@ void loop()
         delay(500);
     }
 
-    // if (shouldRead_)
-    // {
-    //     robot.readJSON(shouldRead_);
-    // }
+    if (shouldRead_)
+    {
+        robot.readJSON(shouldRead_);
+    }
+    if (shouldSend_)
+    {
+        robot.sendJSON(shouldSend_);
+    }
 
     if (!MANETTE)
     {
@@ -94,36 +102,23 @@ void loop()
         case State::wait:
             robot.enableMagnet();
             Serial.println("st_wait");
-            //robot.moveReverse(-1, 0) ? currentState = State::forward : currentState;
             
             if (isRunning)
             {
-                
-                if (robot.moveReverse(-0.1, 0))
-                { 
-                    //Serial.println(robot.getPosition());
-                    currentState = State::initReverse;
-                    
-                }
-                delay(1000);
+                currentState = State::initReverse;
             }
-            
-            //isRunning ? currentState = State::initReverse : currentState;
+
             break;
 
         case State::initReverse:
             Serial.println("st_initrev");
-            to_position = robot.init_reverse_position;
+            toPosition = robot.initReversePosition;
             fromStateStopPendulum = false;
-            checkMR = robot.moveReverse (1, to_position);
             
-            if (checkMR)
+            if (robot.moveReverse(1.0f, toPosition))
             {
-               // Serial.println(currentState);
                 currentState = State::forward;
-                //Serial.println(currentState);
             }
-            //Serial.println(robot.getPosition());
             break;
 
         case State::forward:
@@ -131,19 +126,18 @@ void loop()
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-                to_position = robot.end_position;
-                if (robot.moveForward(robot.fast_speed, to_position, robot.drop_position)) {
-                    robot.disableMagnet();
+                toPosition = robot.endPosition;
+                if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition)) {
+                    currentState = State::reverse;
                 }
-                robot.moveForward(robot.fast_speed, to_position, robot.end_position) ? currentState = State::reverse : currentState;
             }
             else
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = false;
                 robot.enableMagnet();
-                to_position = 0;
-                robot.moveForward(-robot.fast_speed, to_position) ? currentState = State::wait : currentState;
+                toPosition = 0;
+                robot.moveForward(robot.fastSpeed, toPosition) ? currentState = State::wait : currentState;
             }
             break;
 
@@ -152,17 +146,17 @@ void loop()
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
-                to_position = 0;
-                robot.moveReverse(-robot.fast_speed, to_position) ? currentState = State::stopPendulum : currentState;
+                toPosition = 0;
+                robot.moveReverse(robot.fastSpeed, toPosition) ? currentState = State::stopPendulum : currentState;
             }
             else
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = false;
                 robot.disableMagnet();
-                to_position = 0;
+                toPosition = 0;
 
-                robot.moveReverse(-robot.fast_speed, to_position) ? currentState = State::wait : currentState;
+                robot.moveReverse(robot.fastSpeed, toPosition) ? currentState = State::wait : currentState;
             }
             break;
 
@@ -199,7 +193,7 @@ void loop()
                 //tspString = String(robot.time_stop_pendulum, 4);
                 //Serial.println("Toc : " + tocString);
                 //Serial.println("Time stop pendulum : " + tspString);
-                if (timerPID.toc() > robot.time_stop_pendulum)
+                if (timerPID.toc() > robot.timeStopPendulum)
                 {
 
                     pid_.disable();

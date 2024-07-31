@@ -118,9 +118,9 @@ void MainWindow::receiveFromSerial(QString msg){
 
             }
 
-            if (jsonObj.contains("distanceTravelled")) //Displaying Distance travelled
+            if (jsonObj.contains("TravelledDistance")) //Displaying Distance travelled
             {
-                double distanceTravelled = jsonObj["encVex"].toDouble();
+                double distanceTravelled = jsonObj["TravelledDistance"].toDouble();
                 displayDistance(distanceTravelled);
             }
 

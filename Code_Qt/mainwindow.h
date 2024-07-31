@@ -49,6 +49,16 @@ private slots:
     void changeJsonKeyValue();
     void startSerialCom(QString);
     void sendPID();
+    void electroAimantStart();
+    void electroAimantStop();
+    void startAuto();
+    void stopAuto();
+    void manuelMode();
+    void restMode();
+    void displayDistance(double travelledDistance);
+    void displayPendulum(double potVex);
+
+
 
 private:
     void connectTimers(int updateRate);
@@ -60,7 +70,12 @@ private:
     void connectTextInputs();
     void connectComboBox();
     void portCensus();
+    float previousTime_ = 0.0;
+    double energy_;
+    double power_;
 
+
+    bool magnetOn;
     bool record = false;
     CsvWriter* writer_;
     QTimer updateTimer_;
@@ -70,6 +85,7 @@ private:
 
     QString JsonKey_;
     QLineSeries series_;
+    QLineSeries seriesEnergy_;
     QChart chart_;
 
 

@@ -91,7 +91,7 @@ void loop()
     }
     if (shouldSend_)
     {
-        // robot.sendJSON(shouldSend_);
+        robot.sendJSON(shouldSend_);
     }
 
     if (!MANETTE)
@@ -100,7 +100,7 @@ void loop()
         {
         case State::wait:
             robot.enableMagnet();
-            Serial.println("st_wait");
+            //Serial.println("st_wait");
 
             if (isRunning)
             {
@@ -124,7 +124,7 @@ void loop()
             //Serial.println("st_forward");
             if (!fromStateStopPendulum)
             {
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 toPosition = robot.endPosition;
                 if (robot.moveForward(robot.fastSpeed, toPosition, robot.dropPosition)) {
                     currentState = State::reverse;
@@ -132,7 +132,7 @@ void loop()
             }
             else
             {
-                (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
+                //(robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
                 fromStateStopPendulum = false;
                 robot.enableMagnet();
                 toPosition = 0;
@@ -141,7 +141,7 @@ void loop()
             break;
 
         case State::reverse:
-            Serial.println("st_reverse");
+            //Serial.println("st_reverse");
             if (!fromStateStopPendulum)
             {
                 (robot.getPosition() > FRONTLIMIT || robot.getPosition() < BACKLIMIT) ? currentState = State::emergencyStop : currentState;
@@ -160,7 +160,7 @@ void loop()
             break;
 
         case State::stopPendulum:
-            Serial.println("STOP PENDULUM");
+            //Serial.println("STOP PENDULUM");
             if (firstLoop)
             {
                 // Serial.println("FIRST LOOP");

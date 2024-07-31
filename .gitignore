@@ -4,4 +4,4 @@
 .vscode/launch.json
 .vscode/ipch
 arduino/build
-build-identification-Desktop-Debug
+build-identification-Desktop-Debug/*

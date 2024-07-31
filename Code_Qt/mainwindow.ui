@@ -24,14 +24,14 @@
     <item row="11" column="8">
      <widget class="QPushButton" name="pb_SS">
       <property name="text">
-       <string>PushButton</string>
+       <string>send SS</string>
       </property>
      </widget>
     </item>
     <item row="14" column="8">
      <widget class="QPushButton" name="pb_DP">
       <property name="text">
-       <string>PushButton</string>
+       <string>send DP</string>
       </property>
      </widget>
     </item>
@@ -75,7 +75,7 @@
     <item row="13" column="8">
      <widget class="QPushButton" name="pb_FS">
       <property name="text">
-       <string>PushButton</string>
+       <string>send FS</string>
       </property>
      </widget>
     </item>
@@ -155,7 +155,7 @@
     <item row="8" column="8">
      <widget class="QPushButton" name="pb_Ki">
       <property name="text">
-       <string>PushButton</string>
+       <string>send Ki</string>
       </property>
      </widget>
     </item>
@@ -207,7 +207,7 @@
     <item row="16" column="8">
      <widget class="QPushButton" name="pb_InitRversePosition">
       <property name="text">
-       <string>PushButton</string>
+       <string>send RP</string>
       </property>
      </widget>
     </item>
@@ -277,7 +277,7 @@
     <item row="9" column="8">
      <widget class="QPushButton" name="pb_Kd">
       <property name="text">
-       <string>PushButton</string>
+       <string>send Kd</string>
       </property>
      </widget>
     </item>
@@ -298,7 +298,7 @@
     <item row="17" column="8">
      <widget class="QPushButton" name="pb_TimeStopPend">
       <property name="text">
-       <string>PushButton</string>
+       <string>send TS</string>
       </property>
      </widget>
     </item>
@@ -315,7 +315,7 @@
     <item row="7" column="8">
      <widget class="QPushButton" name="pb_Kp">
       <property name="text">
-       <string>PushButton</string>
+       <string> send Kp</string>
       </property>
      </widget>
     </item>
@@ -329,7 +329,7 @@
     <item row="15" column="8">
      <widget class="QPushButton" name="pb_EP">
       <property name="text">
-       <string>PushButton</string>
+       <string>send EP</string>
       </property>
      </widget>
     </item>
